@@ -27,50 +27,50 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \ingroup group-concepts
+    template<typename I, typename O, typename T, typename P = ident>
+    using RemoveCopyable = meta::strict_and<
+      InputIterator<I>,
+      WeaklyIncrementable<O>,
+      IndirectRelation<equal_to, projected<I, P>, T const *>,
+      IndirectlyCopyable<I, O>>;
+
+    /// \addtogroup group-algorithms
+    /// @{
+    struct remove_copy_fn
     {
-        /// \ingroup group-concepts
-        template<typename I, typename O, typename T, typename P = ident>
-        using RemoveCopyable = meta::strict_and<
-            InputIterator<I>,
-            WeaklyIncrementable<O>,
-            IndirectRelation<equal_to, projected<I, P>, T const *>,
-            IndirectlyCopyable<I, O>>;
-
-        /// \addtogroup group-algorithms
-        /// @{
-        struct remove_copy_fn
+      template<typename I, typename S, typename O, typename T, typename P = ident,
+        CONCEPT_REQUIRES_(RemoveCopyable<I, O, T, P>() && Sentinel<S, I>())>
+      tagged_pair<tag::in(I), tag::out(O)> operator()(I begin, S end, O out, T const &val, P proj = P{}) const
+      {
+        for(; begin != end; ++begin)
         {
-            template<typename I, typename S, typename O, typename T, typename P = ident,
-                CONCEPT_REQUIRES_(RemoveCopyable<I, O, T, P>() && Sentinel<S, I>())>
-            tagged_pair<tag::in(I), tag::out(O)> operator()(I begin, S end, O out, T const &val, P proj = P{}) const
-            {
-                for(; begin != end; ++begin)
-                {
-                    auto &&x = *begin;
-                    if(!(invoke(proj, x) == val))
-                    {
-                        *out = (decltype(x) &&) x;
-                        ++out;
-                    }
-                }
-                return {begin, out};
-            }
+          auto &&x = *begin;
+          if(!(invoke(proj, x) == val))
+          {
+            *out = (decltype(x) &&) x;
+            ++out;
+          }
+        }
+        return {begin, out};
+      }
 
-            template<typename Rng, typename O, typename T, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(RemoveCopyable<I, O, T, P>() && InputRange<Rng>())>
-            tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)> operator()(Rng &&rng, O out, T const &val, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(out), val, std::move(proj));
-            }
-        };
+      template<typename Rng, typename O, typename T, typename P = ident,
+        typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(RemoveCopyable<I, O, T, P>() && InputRange<Rng>())>
+      tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)> operator()(Rng &&rng, O out, T const &val, P proj = P{}) const
+      {
+        return (*this)(begin(rng), end(rng), std::move(out), val, std::move(proj));
+      }
+    };
 
-        /// \sa `remove_copy_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<remove_copy_fn>, remove_copy)
-        /// @}
-    } // namespace v3
+    /// \sa `remove_copy_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<remove_copy_fn>, remove_copy)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

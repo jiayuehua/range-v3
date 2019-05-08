@@ -23,57 +23,57 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-actions
+    /// @{
+    namespace action
     {
-        /// \addtogroup group-actions
-        /// @{
-        namespace action
+      struct unstable_remove_if_fn
+      {
+      private:
+        friend action_access;
+        template<typename C, typename P = ident, CONCEPT_REQUIRES_(!Range<C>())>
+        static auto bind(unstable_remove_if_fn unstable_remove_if, C pred, P proj = P{})
+        RANGES_DECLTYPE_AUTO_RETURN
+        (
+          std::bind(unstable_remove_if, std::placeholders::_1,
+                protect(std::move(pred)), protect(std::move(proj)))
+        )
+      public:
+
+        struct ConceptImpl
         {
-            struct unstable_remove_if_fn
-            {
-            private:
-                friend action_access;
-                template<typename C, typename P = ident, CONCEPT_REQUIRES_(!Range<C>())>
-                static auto bind(unstable_remove_if_fn unstable_remove_if, C pred, P proj = P{})
-                RANGES_DECLTYPE_AUTO_RETURN
-                (
-                    std::bind(unstable_remove_if, std::placeholders::_1,
-                              protect(std::move(pred)), protect(std::move(proj)))
-                )
-            public:
+          template<typename Rng, typename C, typename P = ident,
+              typename I = iterator_t<Rng>, typename S = sentinel_t<Rng>>
+          auto requires_() -> decltype(
+          concepts::valid_expr(
+              concepts::model_of<concepts::ErasableRange, Rng, I, S>(),
+              concepts::is_true(UnstableRemovableIf<I, S, C, P>())
+          ));
+        };
 
-                struct ConceptImpl
-                {
-                    template<typename Rng, typename C, typename P = ident,
-                            typename I = iterator_t<Rng>, typename S = sentinel_t<Rng>>
-                    auto requires_() -> decltype(
-                    concepts::valid_expr(
-                            concepts::model_of<concepts::ErasableRange, Rng, I, S>(),
-                            concepts::is_true(UnstableRemovableIf<I, S, C, P>())
-                    ));
-                };
+        template<typename Rng, typename C, typename P = ident>
+        using Concept = concepts::models<ConceptImpl, Rng, C, P>;
 
-                template<typename Rng, typename C, typename P = ident>
-                using Concept = concepts::models<ConceptImpl, Rng, C, P>;
-
-                template<typename Rng, typename C, typename P = ident,
-                        CONCEPT_REQUIRES_(Concept<Rng, C, P>())>
-                Rng operator()(Rng &&rng, C pred, P proj = P{}) const
-                {
-                    auto it = ranges::unstable_remove_if(ranges::begin(rng), ranges::end(rng), std::move(pred), std::move(proj));
-                    ranges::erase(rng, it, ranges::end(rng));
-                    return static_cast<Rng&&>(rng);
-                }
-            };
-
-
-            /// \ingroup group-actions
-            /// \sa action
-            /// \sa with_braced_init_args
-            RANGES_INLINE_VARIABLE(action<unstable_remove_if_fn>, unstable_remove_if)
+        template<typename Rng, typename C, typename P = ident,
+            CONCEPT_REQUIRES_(Concept<Rng, C, P>())>
+        Rng operator()(Rng &&rng, C pred, P proj = P{}) const
+        {
+          auto it = ranges::unstable_remove_if(ranges::begin(rng), ranges::end(rng), std::move(pred), std::move(proj));
+          ranges::erase(rng, it, ranges::end(rng));
+          return static_cast<Rng&&>(rng);
         }
-        /// @}
+      };
+
+
+      /// \ingroup group-actions
+      /// \sa action
+      /// \sa with_braced_init_args
+      RANGES_INLINE_VARIABLE(action<unstable_remove_if_fn>, unstable_remove_if)
     }
+    /// @}
+  }
 }
 
 #endif // include guard

@@ -20,60 +20,60 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    namespace detail
     {
-        namespace detail
-        {
-            struct empty_view_base
-            {
-                template<typename T>
-                friend constexpr T *begin(empty_view<T>) noexcept
-                {
-                    return nullptr;
-                }
-                template<typename T>
-                friend constexpr T *end(empty_view<T>) noexcept
-                {
-                    return nullptr;
-                }
-            };
-        }
-
+      struct empty_view_base
+      {
         template<typename T>
-        struct empty_view
-          : view_interface<empty_view<T>, (cardinality)0>
-          , private detail::empty_view_base
+        friend constexpr T *begin(empty_view<T>) noexcept
         {
-            static_assert(std::is_object<T>::value,
-                "The template parameter to empty_view must be an object type.");
-            empty_view() = default;
-            constexpr static T *begin() noexcept
-            {
-                return nullptr;
-            }
-            constexpr static T *end() noexcept
-            {
-                return nullptr;
-            }
-            static constexpr std::size_t size() noexcept
-            {
-                return 0u;
-            }
-            static constexpr T *data() noexcept
-            {
-                return nullptr;
-            }
-        };
-
-        namespace view
-        {
-            template<typename T>
-            empty_view<T> empty()
-            {
-                return {};
-            }
+          return nullptr;
         }
+        template<typename T>
+        friend constexpr T *end(empty_view<T>) noexcept
+        {
+          return nullptr;
+        }
+      };
     }
+
+    template<typename T>
+    struct empty_view
+      : view_interface<empty_view<T>, (cardinality)0>
+      , private detail::empty_view_base
+    {
+      static_assert(std::is_object<T>::value,
+        "The template parameter to empty_view must be an object type.");
+      empty_view() = default;
+      constexpr static T *begin() noexcept
+      {
+        return nullptr;
+      }
+      constexpr static T *end() noexcept
+      {
+        return nullptr;
+      }
+      static constexpr std::size_t size() noexcept
+      {
+        return 0u;
+      }
+      static constexpr T *data() noexcept
+      {
+        return nullptr;
+      }
+    };
+
+    namespace view
+    {
+      template<typename T>
+      empty_view<T> empty()
+      {
+        return {};
+      }
+    }
+  }
 }
 
 RANGES_SATISFY_BOOST_RANGE(::ranges::v3::empty_view)

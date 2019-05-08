@@ -32,72 +32,72 @@ RANGES_DIAGNOSTIC_IGNORE_SIGN_CONVERSION
 
 namespace
 {
-    std::mt19937 gen;
+  std::mt19937 gen;
 
-    void
-    test_one(unsigned N, unsigned M)
-    {
-        RANGES_ENSURE(N != 0);
-        RANGES_ENSURE(M < N);
-        std::unique_ptr<int[]> array{new int[N]};
-        for (int i = 0; (unsigned)i < N; ++i)
-            array[i] = i;
-        std::shuffle(array.get(), array.get()+N, gen);
-        CHECK(ranges::nth_element(array.get(), array.get()+M, array.get()+N) == array.get()+N);
-        CHECK((unsigned)array[M] == M);
-        std::shuffle(array.get(), array.get()+N, gen);
-        CHECK(ranges::nth_element(::as_lvalue(ranges::make_iterator_range(array.get(), array.get()+N)), array.get()+M) == array.get()+N);
-        CHECK((unsigned)array[M] == M);
-        std::shuffle(array.get(), array.get()+N, gen);
-        CHECK(ranges::nth_element(ranges::make_iterator_range(array.get(), array.get()+N), array.get()+M).get_unsafe() == array.get()+N);
-        CHECK((unsigned)array[M] == M);
-        ranges::nth_element(array.get(), array.get()+N, array.get()+N); // begin, end, end
-    }
+  void
+  test_one(unsigned N, unsigned M)
+  {
+    RANGES_ENSURE(N != 0);
+    RANGES_ENSURE(M < N);
+    std::unique_ptr<int[]> array{new int[N]};
+    for (int i = 0; (unsigned)i < N; ++i)
+      array[i] = i;
+    std::shuffle(array.get(), array.get()+N, gen);
+    CHECK(ranges::nth_element(array.get(), array.get()+M, array.get()+N) == array.get()+N);
+    CHECK((unsigned)array[M] == M);
+    std::shuffle(array.get(), array.get()+N, gen);
+    CHECK(ranges::nth_element(::as_lvalue(ranges::make_iterator_range(array.get(), array.get()+N)), array.get()+M) == array.get()+N);
+    CHECK((unsigned)array[M] == M);
+    std::shuffle(array.get(), array.get()+N, gen);
+    CHECK(ranges::nth_element(ranges::make_iterator_range(array.get(), array.get()+N), array.get()+M).get_unsafe() == array.get()+N);
+    CHECK((unsigned)array[M] == M);
+    ranges::nth_element(array.get(), array.get()+N, array.get()+N); // begin, end, end
+  }
 
-    void
-    test(unsigned N)
-    {
-        test_one(N, 0);
-        test_one(N, 1);
-        test_one(N, 2);
-        test_one(N, 3);
-        test_one(N, N/2-1);
-        test_one(N, N/2);
-        test_one(N, N/2+1);
-        test_one(N, N-3);
-        test_one(N, N-2);
-        test_one(N, N-1);
-    }
+  void
+  test(unsigned N)
+  {
+    test_one(N, 0);
+    test_one(N, 1);
+    test_one(N, 2);
+    test_one(N, 3);
+    test_one(N, N/2-1);
+    test_one(N, N/2);
+    test_one(N, N/2+1);
+    test_one(N, N-3);
+    test_one(N, N-2);
+    test_one(N, N-1);
+  }
 
-    struct S
-    {
-        int i,j;
-    };
+  struct S
+  {
+    int i,j;
+  };
 }
 
 int main()
 {
-    int d = 0;
-    ranges::nth_element(&d, &d, &d);
-    CHECK(d == 0);
-    test(256);
-    test(257);
-    test(499);
-    test(500);
-    test(997);
-    test(1000);
-    test(1009);
+  int d = 0;
+  ranges::nth_element(&d, &d, &d);
+  CHECK(d == 0);
+  test(256);
+  test(257);
+  test(499);
+  test(500);
+  test(997);
+  test(1000);
+  test(1009);
 
-    // Works with projections?
-    const int N = 257;
-    const int M = 56;
-    S ia[N];
-    for(int i = 0; i < N; ++i)
-        ia[i].i = ia[i].j = i;
-    std::shuffle(ia, ia+N, gen);
-    ranges::nth_element(ia, ia+M, std::less<int>(), &S::i);
-    CHECK(ia[M].i == M);
-    CHECK(ia[M].j == M);
+  // Works with projections?
+  const int N = 257;
+  const int M = 56;
+  S ia[N];
+  for(int i = 0; i < N; ++i)
+    ia[i].i = ia[i].j = i;
+  std::shuffle(ia, ia+N, gen);
+  ranges::nth_element(ia, ia+M, std::less<int>(), &S::i);
+  CHECK(ia[M].i == M);
+  CHECK(ia[M].j == M);
 
-    return test_result();
+  return test_result();
 }

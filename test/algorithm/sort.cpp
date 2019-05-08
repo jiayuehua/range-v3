@@ -43,282 +43,282 @@ RANGES_DIAGNOSTIC_IGNORE_UNNEEDED_INTERNAL
 // BUGBUG
 namespace std
 {
-    template<typename F, typename S>
-    std::ostream & operator<<(std::ostream &sout, std::pair<F,S> const & p)
-    {
-        return sout << '[' << p.first << ',' << p.second << ']';
-    }
+  template<typename F, typename S>
+  std::ostream & operator<<(std::ostream &sout, std::pair<F,S> const & p)
+  {
+    return sout << '[' << p.first << ',' << p.second << ']';
+  }
 }
 
 namespace
 {
-    std::mt19937 gen;
+  std::mt19937 gen;
 
-    struct indirect_less
-    {
-        template<class P>
-        bool operator()(const P& x, const P& y)
-            {return *x < *y;}
-    };
+  struct indirect_less
+  {
+    template<class P>
+    bool operator()(const P& x, const P& y)
+      {return *x < *y;}
+  };
 
-    template<class RI>
-    void
-    test_sort_helper(RI f, RI l)
+  template<class RI>
+  void
+  test_sort_helper(RI f, RI l)
+  {
+    using value_type = ranges::value_type_t<RI>;
+    auto sort = make_testable_1<false>(ranges::sort);
+    if (f != l)
     {
-        using value_type = ranges::value_type_t<RI>;
-        auto sort = make_testable_1<false>(ranges::sort);
-        if (f != l)
+      auto len = l - f;
+      value_type* save(new value_type[len]);
+      do
+      {
+        std::copy(f, l, save);
+        sort(save, save+len).check([&](int *res)
         {
-            auto len = l - f;
-            value_type* save(new value_type[len]);
-            do
-            {
-                std::copy(f, l, save);
-                sort(save, save+len).check([&](int *res)
-                {
-                    CHECK(res == save+len);
-                    CHECK(std::is_sorted(save, save+len));
-                    std::copy(f, l, save);
-                });
-                sort(save, save+len, std::greater<int>{}).check([&](int *res)
-                {
-                    CHECK(res == save+len);
-                    CHECK(std::is_sorted(save, save+len, std::greater<int>{}));
-                    std::copy(f, l, save);
-                });
-            } while (std::next_permutation(f, l));
-            delete [] save;
-        }
+          CHECK(res == save+len);
+          CHECK(std::is_sorted(save, save+len));
+          std::copy(f, l, save);
+        });
+        sort(save, save+len, std::greater<int>{}).check([&](int *res)
+        {
+          CHECK(res == save+len);
+          CHECK(std::is_sorted(save, save+len, std::greater<int>{}));
+          std::copy(f, l, save);
+        });
+      } while (std::next_permutation(f, l));
+      delete [] save;
+    }
+  }
+
+  template<class RI>
+  void
+  test_sort_driver_driver(RI f, RI l, int start, RI real_last)
+  {
+    for (RI i = l; i > f + start;)
+    {
+      *--i = start;
+      if (f == i)
+      {
+        test_sort_helper(f, real_last);
+      }
+      if (start > 0)
+        test_sort_driver_driver(f, i, start-1, real_last);
+    }
+  }
+
+  template<class RI>
+  void
+  test_sort_driver(RI f, RI l, int start)
+  {
+    test_sort_driver_driver(f, l, start, l);
+  }
+
+  template<int sa>
+  void
+  test_sort_()
+  {
+    int ia[sa];
+    for (int i = 0; i < sa; ++i)
+    {
+      test_sort_driver(ia, ia+sa, i);
+    }
+  }
+
+  void
+  test_larger_sorts(int N, int M)
+  {
+    RANGES_ENSURE(N > 0);
+    RANGES_ENSURE(M > 0);
+    // create array length N filled with M different numbers
+    int* array = new int[N];
+    int x = 0;
+    for (int i = 0; i < N; ++i)
+    {
+      array[i] = x;
+      if (++x == M)
+        x = 0;
     }
 
-    template<class RI>
-    void
-    test_sort_driver_driver(RI f, RI l, int start, RI real_last)
+    // test saw tooth pattern
+    CHECK(ranges::sort(array, array+N) == array+N);
+    CHECK(std::is_sorted(array, array+N));
+    // test random pattern
+    std::shuffle(array, array+N, gen);
+    CHECK(ranges::sort(array, array+N) == array+N);
+    CHECK(std::is_sorted(array, array+N));
+    // test sorted pattern
+    CHECK(ranges::sort(array, array+N) == array+N);
+    CHECK(std::is_sorted(array, array+N));
+    // test reverse sorted pattern
+    std::reverse(array, array+N);
+    CHECK(ranges::sort(array, array+N) == array+N);
+    CHECK(std::is_sorted(array, array+N));
+    // test swap ranges 2 pattern
+    std::swap_ranges(array, array+N/2, array+N/2);
+    CHECK(ranges::sort(array, array+N) == array+N);
+    CHECK(std::is_sorted(array, array+N));
+    // test reverse swap ranges 2 pattern
+    std::reverse(array, array+N);
+    std::swap_ranges(array, array+N/2, array+N/2);
+    CHECK(ranges::sort(array, array+N) == array+N);
+    CHECK(std::is_sorted(array, array+N));
+    delete [] array;
+  }
+
+  void
+  test_larger_sorts(unsigned N)
+  {
+    test_larger_sorts(N, 1);
+    test_larger_sorts(N, 2);
+    test_larger_sorts(N, 3);
+    test_larger_sorts(N, N/2-1);
+    test_larger_sorts(N, N/2);
+    test_larger_sorts(N, N/2+1);
+    test_larger_sorts(N, N-2);
+    test_larger_sorts(N, N-1);
+    test_larger_sorts(N, N);
+  }
+
+  struct S
+  {
+    int i, j;
+  };
+
+  struct Int
+  {
+    using difference_type = int;
+    int i_;
+    Int(int i = 0) : i_(i) {}
+    Int(Int && that) : i_(that.i_) { that.i_ = 0; }
+    Int(Int const &) = delete;
+    Int & operator=(Int && that)
     {
-        for (RI i = l; i > f + start;)
-        {
-            *--i = start;
-            if (f == i)
-            {
-                test_sort_helper(f, real_last);
-            }
-            if (start > 0)
-                test_sort_driver_driver(f, i, start-1, real_last);
-        }
+      i_ = that.i_;
+      that.i_ = 0;
+      return *this;
     }
-
-    template<class RI>
-    void
-    test_sort_driver(RI f, RI l, int start)
+    friend bool operator==(Int const &a, Int const &b)
     {
-        test_sort_driver_driver(f, l, start, l);
+      return a.i_ == b.i_;
     }
-
-    template<int sa>
-    void
-    test_sort_()
+    friend bool operator!=(Int const &a, Int const &b)
     {
-        int ia[sa];
-        for (int i = 0; i < sa; ++i)
-        {
-            test_sort_driver(ia, ia+sa, i);
-        }
+      return !(a == b);
     }
-
-    void
-    test_larger_sorts(int N, int M)
+    friend bool operator<(Int const &a, Int const &b)
     {
-        RANGES_ENSURE(N > 0);
-        RANGES_ENSURE(M > 0);
-        // create array length N filled with M different numbers
-        int* array = new int[N];
-        int x = 0;
-        for (int i = 0; i < N; ++i)
-        {
-            array[i] = x;
-            if (++x == M)
-                x = 0;
-        }
-
-        // test saw tooth pattern
-        CHECK(ranges::sort(array, array+N) == array+N);
-        CHECK(std::is_sorted(array, array+N));
-        // test random pattern
-        std::shuffle(array, array+N, gen);
-        CHECK(ranges::sort(array, array+N) == array+N);
-        CHECK(std::is_sorted(array, array+N));
-        // test sorted pattern
-        CHECK(ranges::sort(array, array+N) == array+N);
-        CHECK(std::is_sorted(array, array+N));
-        // test reverse sorted pattern
-        std::reverse(array, array+N);
-        CHECK(ranges::sort(array, array+N) == array+N);
-        CHECK(std::is_sorted(array, array+N));
-        // test swap ranges 2 pattern
-        std::swap_ranges(array, array+N/2, array+N/2);
-        CHECK(ranges::sort(array, array+N) == array+N);
-        CHECK(std::is_sorted(array, array+N));
-        // test reverse swap ranges 2 pattern
-        std::reverse(array, array+N);
-        std::swap_ranges(array, array+N/2, array+N/2);
-        CHECK(ranges::sort(array, array+N) == array+N);
-        CHECK(std::is_sorted(array, array+N));
-        delete [] array;
+      return a.i_ < b.i_;
     }
-
-    void
-    test_larger_sorts(unsigned N)
+    friend bool operator>(Int const &a, Int const &b)
     {
-        test_larger_sorts(N, 1);
-        test_larger_sorts(N, 2);
-        test_larger_sorts(N, 3);
-        test_larger_sorts(N, N/2-1);
-        test_larger_sorts(N, N/2);
-        test_larger_sorts(N, N/2+1);
-        test_larger_sorts(N, N-2);
-        test_larger_sorts(N, N-1);
-        test_larger_sorts(N, N);
+      return a.i_ > b.i_;
     }
-
-    struct S
+    friend bool operator<=(Int const &a, Int const &b)
     {
-        int i, j;
-    };
-
-    struct Int
+      return a.i_ <= b.i_;
+    }
+    friend bool operator>=(Int const &a, Int const &b)
     {
-        using difference_type = int;
-        int i_;
-        Int(int i = 0) : i_(i) {}
-        Int(Int && that) : i_(that.i_) { that.i_ = 0; }
-        Int(Int const &) = delete;
-        Int & operator=(Int && that)
-        {
-            i_ = that.i_;
-            that.i_ = 0;
-            return *this;
-        }
-        friend bool operator==(Int const &a, Int const &b)
-        {
-            return a.i_ == b.i_;
-        }
-        friend bool operator!=(Int const &a, Int const &b)
-        {
-            return !(a == b);
-        }
-        friend bool operator<(Int const &a, Int const &b)
-        {
-            return a.i_ < b.i_;
-        }
-        friend bool operator>(Int const &a, Int const &b)
-        {
-            return a.i_ > b.i_;
-        }
-        friend bool operator<=(Int const &a, Int const &b)
-        {
-            return a.i_ <= b.i_;
-        }
-        friend bool operator>=(Int const &a, Int const &b)
-        {
-            return a.i_ >= b.i_;
-        }
-    };
-    CONCEPT_ASSERT(ranges::DefaultConstructible<Int>());
-    CONCEPT_ASSERT(ranges::Movable<Int>());
-    CONCEPT_ASSERT(ranges::TotallyOrdered<Int>());
+      return a.i_ >= b.i_;
+    }
+  };
+  CONCEPT_ASSERT(ranges::DefaultConstructible<Int>());
+  CONCEPT_ASSERT(ranges::Movable<Int>());
+  CONCEPT_ASSERT(ranges::TotallyOrdered<Int>());
 }
 
 int main()
 {
-    // test null range
-    int d = 0;
-    ranges::sort(&d, &d);
-    // exhaustively test all possibilities up to length 8
-    test_sort_<1>();
-    test_sort_<2>();
-    test_sort_<3>();
-    test_sort_<4>();
-    test_sort_<5>();
-    test_sort_<6>();
-    test_sort_<7>();
-    test_sort_<8>();
+  // test null range
+  int d = 0;
+  ranges::sort(&d, &d);
+  // exhaustively test all possibilities up to length 8
+  test_sort_<1>();
+  test_sort_<2>();
+  test_sort_<3>();
+  test_sort_<4>();
+  test_sort_<5>();
+  test_sort_<6>();
+  test_sort_<7>();
+  test_sort_<8>();
 
-    test_larger_sorts(15);
-    test_larger_sorts(16);
-    test_larger_sorts(17);
-    test_larger_sorts(256);
-    test_larger_sorts(257);
-    test_larger_sorts(499);
-    test_larger_sorts(500);
-    test_larger_sorts(997);
-    test_larger_sorts(1000);
-    test_larger_sorts(1009);
+  test_larger_sorts(15);
+  test_larger_sorts(16);
+  test_larger_sorts(17);
+  test_larger_sorts(256);
+  test_larger_sorts(257);
+  test_larger_sorts(499);
+  test_larger_sorts(500);
+  test_larger_sorts(997);
+  test_larger_sorts(1000);
+  test_larger_sorts(1009);
 
-    // Check move-only types
+  // Check move-only types
+  {
+    std::vector<std::unique_ptr<int> > v(1000);
+    for(int i = 0; (std::size_t)i < v.size(); ++i)
+      v[i].reset(new int((int)v.size() - i - 1));
+    ranges::sort(v, indirect_less());
+    for(int i = 0; (std::size_t)i < v.size(); ++i)
+      CHECK(*v[i] == i);
+  }
+
+  // Check projections
+  {
+    std::vector<S> v(1000, S{});
+    for(int i = 0; (std::size_t)i < v.size(); ++i)
     {
-        std::vector<std::unique_ptr<int> > v(1000);
-        for(int i = 0; (std::size_t)i < v.size(); ++i)
-            v[i].reset(new int((int)v.size() - i - 1));
-        ranges::sort(v, indirect_less());
-        for(int i = 0; (std::size_t)i < v.size(); ++i)
-            CHECK(*v[i] == i);
+      v[i].i = (int)v.size() - i - 1;
+      v[i].j = i;
     }
-
-    // Check projections
+    ranges::sort(v, std::less<int>{}, &S::i);
+    for(int i = 0; (std::size_t)i < v.size(); ++i)
     {
-        std::vector<S> v(1000, S{});
-        for(int i = 0; (std::size_t)i < v.size(); ++i)
-        {
-            v[i].i = (int)v.size() - i - 1;
-            v[i].j = i;
-        }
-        ranges::sort(v, std::less<int>{}, &S::i);
-        for(int i = 0; (std::size_t)i < v.size(); ++i)
-        {
-            CHECK(v[i].i == i);
-            CHECK((std::size_t)v[i].j == v.size() - i - 1);
-        }
+      CHECK(v[i].i == i);
+      CHECK((std::size_t)v[i].j == v.size() - i - 1);
     }
+  }
 
-    // Check rvalue range
+  // Check rvalue range
+  {
+    std::vector<S> v(1000, S{});
+    for(int i = 0; (std::size_t)i < v.size(); ++i)
     {
-        std::vector<S> v(1000, S{});
-        for(int i = 0; (std::size_t)i < v.size(); ++i)
-        {
-            v[i].i = (int)v.size() - i - 1;
-            v[i].j = i;
-        }
-        CHECK(ranges::sort(ranges::view::all(v), std::less<int>{}, &S::i).get_unsafe() == v.end());
-        for(int i = 0; (std::size_t)i < v.size(); ++i)
-        {
-            CHECK(v[i].i == i);
-            CHECK((std::size_t)v[i].j == v.size() - i - 1);
-        }
+      v[i].i = (int)v.size() - i - 1;
+      v[i].j = i;
     }
-
-    // Check sorting a zip view, which uses iter_move
+    CHECK(ranges::sort(ranges::view::all(v), std::less<int>{}, &S::i).get_unsafe() == v.end());
+    for(int i = 0; (std::size_t)i < v.size(); ++i)
     {
-        using namespace ranges;
-        std::vector<int> v0 =
-            view::for_each(view::ints(1,6) | view::reverse, [](int i){
-                return ranges::yield_from(view::repeat_n(i,i));
-            });
-        auto v1 = ranges::to_<std::vector<Int>>(
-            {1,2,2,3,3,3,4,4,4,4,5,5,5,5,5});
-        auto rng = view::zip(v0, v1);
-        ::check_equal(v0,{5,5,5,5,5,4,4,4,4,3,3,3,2,2,1});
-        ::check_equal(v1,{1,2,2,3,3,3,4,4,4,4,5,5,5,5,5});
-        using Rng = decltype(rng);
-        using CR = range_common_reference_t<Rng>;
-        auto proj = [](CR r) { return r; };
-        auto pred = [](CR r1, CR r2) { return r1 < r2; };
-        sort(rng, pred, proj);
-        ::check_equal(v0,{1,2,2,3,3,3,4,4,4,4,5,5,5,5,5});
-        ::check_equal(v1,{5,5,5,4,5,5,3,4,4,4,1,2,2,3,3});
-
-        // Check that this compiles, too:
-        sort(rng);
+      CHECK(v[i].i == i);
+      CHECK((std::size_t)v[i].j == v.size() - i - 1);
     }
+  }
 
-    return ::test_result();
+  // Check sorting a zip view, which uses iter_move
+  {
+    using namespace ranges;
+    std::vector<int> v0 =
+      view::for_each(view::ints(1,6) | view::reverse, [](int i){
+        return ranges::yield_from(view::repeat_n(i,i));
+      });
+    auto v1 = ranges::to_<std::vector<Int>>(
+      {1,2,2,3,3,3,4,4,4,4,5,5,5,5,5});
+    auto rng = view::zip(v0, v1);
+    ::check_equal(v0,{5,5,5,5,5,4,4,4,4,3,3,3,2,2,1});
+    ::check_equal(v1,{1,2,2,3,3,3,4,4,4,4,5,5,5,5,5});
+    using Rng = decltype(rng);
+    using CR = range_common_reference_t<Rng>;
+    auto proj = [](CR r) { return r; };
+    auto pred = [](CR r1, CR r2) { return r1 < r2; };
+    sort(rng, pred, proj);
+    ::check_equal(v0,{1,2,2,3,3,3,4,4,4,4,5,5,5,5,5});
+    ::check_equal(v1,{5,5,5,4,5,5,3,4,4,4,1,2,2,3,3});
+
+    // Check that this compiles, too:
+    sort(rng);
+  }
+
+  return ::test_result();
 }

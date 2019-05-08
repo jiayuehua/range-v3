@@ -18,27 +18,27 @@ using namespace ranges;
 class c_string_range
   : public view_facade<c_string_range>
 {
-    friend range_access;
-    char const * sz_;
-    char const & read() const { return *sz_; }
-    bool equal(default_sentinel) const { return *sz_ == '\0'; }
-    void next() { ++sz_; }
+  friend range_access;
+  char const * sz_;
+  char const & read() const { return *sz_; }
+  bool equal(default_sentinel) const { return *sz_ == '\0'; }
+  void next() { ++sz_; }
 public:
-    c_string_range() = default;
-    explicit c_string_range(char const *sz) : sz_(sz)
-    {
-        assert(sz != nullptr);
-    }
+  c_string_range() = default;
+  explicit c_string_range(char const *sz) : sz_(sz)
+  {
+    assert(sz != nullptr);
+  }
 };
 
 
 
 int main()
 {
-    c_string_range r("hello world");
-    // Iterate over all the characters and print them out
-    ranges::for_each(r, [](char ch){
-        std::cout << ch << ' ';
-    });
-    // prints: h e l l o   w o r l d
+  c_string_range r("hello world");
+  // Iterate over all the characters and print them out
+  ranges::for_each(r, [](char ch){
+    std::cout << ch << ' ';
+  });
+  // prints: h e l l o   w o r l d
 }

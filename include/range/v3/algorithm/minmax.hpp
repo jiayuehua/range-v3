@@ -28,81 +28,81 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct minmax_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct minmax_fn
+      template<typename Rng, typename C = ordered_less, typename P = ident,
+        typename I = iterator_t<Rng>, typename V = value_type_t<I>,
+        typename R = tagged_pair<tag::min(V), tag::max(V)>,
+        CONCEPT_REQUIRES_(InputRange<Rng>() && Copyable<V>() &&
+          IndirectRelation<C, projected<I, P>>())>
+      RANGES_CXX14_CONSTEXPR
+      R operator()(Rng &&rng, C pred = C{}, P proj = P{}) const
+      {
+        auto begin = ranges::begin(rng);
+        auto end = ranges::end(rng);
+        RANGES_EXPECT(begin != end);
+        auto result = R{*begin, *begin};
+        if(++begin != end)
         {
-            template<typename Rng, typename C = ordered_less, typename P = ident,
-                typename I = iterator_t<Rng>, typename V = value_type_t<I>,
-                typename R = tagged_pair<tag::min(V), tag::max(V)>,
-                CONCEPT_REQUIRES_(InputRange<Rng>() && Copyable<V>() &&
-                    IndirectRelation<C, projected<I, P>>())>
-            RANGES_CXX14_CONSTEXPR
-            R operator()(Rng &&rng, C pred = C{}, P proj = P{}) const
+          {
+            auto && tmp = *begin;
+            if(invoke(pred, invoke(proj, tmp), invoke(proj, result.first)))
+              result.first = (decltype(tmp) &&) tmp;
+            else
+              result.second = (decltype(tmp) &&) tmp;
+          }
+          while(++begin != end)
+          {
+            V tmp1 = *begin;
+            if(++begin == end)
             {
-                auto begin = ranges::begin(rng);
-                auto end = ranges::end(rng);
-                RANGES_EXPECT(begin != end);
-                auto result = R{*begin, *begin};
-                if(++begin != end)
-                {
-                    {
-                        auto && tmp = *begin;
-                        if(invoke(pred, invoke(proj, tmp), invoke(proj, result.first)))
-                            result.first = (decltype(tmp) &&) tmp;
-                        else
-                            result.second = (decltype(tmp) &&) tmp;
-                    }
-                    while(++begin != end)
-                    {
-                        V tmp1 = *begin;
-                        if(++begin == end)
-                        {
-                            if(invoke(pred, invoke(proj, tmp1), invoke(proj, result.first)))
-                                result.first = std::move(tmp1);
-                            else if(!invoke(pred, invoke(proj, tmp1), invoke(proj, result.second)))
-                                result.second = std::move(tmp1);
-                            break;
-                        }
-
-                        auto && tmp2 = *begin;
-                        if(invoke(pred, invoke(proj, tmp2), invoke(proj, tmp1)))
-                        {
-                            if(invoke(pred, invoke(proj, tmp2), invoke(proj, result.first)))
-                                result.first = (decltype(tmp2) &&) tmp2;
-                            if(!invoke(pred, invoke(proj, tmp1), invoke(proj, result.second)))
-                                result.second = std::move(tmp1);
-                        }
-                        else
-                        {
-                            if(invoke(pred, invoke(proj, tmp1), invoke(proj, result.first)))
-                                result.first = std::move(tmp1);
-                            if(!invoke(pred, invoke(proj, tmp2), invoke(proj, result.second)))
-                                result.second = (decltype(tmp2) &&) tmp2;
-                        }
-                    }
-                }
-                return result;
+              if(invoke(pred, invoke(proj, tmp1), invoke(proj, result.first)))
+                result.first = std::move(tmp1);
+              else if(!invoke(pred, invoke(proj, tmp1), invoke(proj, result.second)))
+                result.second = std::move(tmp1);
+              break;
             }
 
-            template<typename T, typename C = ordered_less, typename P = ident,
-                CONCEPT_REQUIRES_(
-                    IndirectRelation<C, projected<const T *, P>>())>
-            constexpr tagged_pair<tag::min(T const &), tag::max(T const &)>
-            operator()(T const &a, T const &b, C pred = C{}, P proj = P{}) const
+            auto && tmp2 = *begin;
+            if(invoke(pred, invoke(proj, tmp2), invoke(proj, tmp1)))
             {
-                using R = tagged_pair<tag::min(T const &), tag::max(T const &)>;
-                return invoke(pred, invoke(proj, b), invoke(proj, a)) ? R{b, a} : R{a, b};
+              if(invoke(pred, invoke(proj, tmp2), invoke(proj, result.first)))
+                result.first = (decltype(tmp2) &&) tmp2;
+              if(!invoke(pred, invoke(proj, tmp1), invoke(proj, result.second)))
+                result.second = std::move(tmp1);
             }
-        };
+            else
+            {
+              if(invoke(pred, invoke(proj, tmp1), invoke(proj, result.first)))
+                result.first = std::move(tmp1);
+              if(!invoke(pred, invoke(proj, tmp2), invoke(proj, result.second)))
+                result.second = (decltype(tmp2) &&) tmp2;
+            }
+          }
+        }
+        return result;
+      }
 
-        /// \sa `minmax_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<minmax_fn>, minmax)
-        /// @}
-    } // namespace v3
+      template<typename T, typename C = ordered_less, typename P = ident,
+        CONCEPT_REQUIRES_(
+          IndirectRelation<C, projected<const T *, P>>())>
+      constexpr tagged_pair<tag::min(T const &), tag::max(T const &)>
+      operator()(T const &a, T const &b, C pred = C{}, P proj = P{}) const
+      {
+        using R = tagged_pair<tag::min(T const &), tag::max(T const &)>;
+        return invoke(pred, invoke(proj, b), invoke(proj, a)) ? R{b, a} : R{a, b};
+      }
+    };
+
+    /// \sa `minmax_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<minmax_fn>, minmax)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

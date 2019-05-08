@@ -29,92 +29,92 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-views
+    /// @{
+    template<typename G>
+    struct generate_n_view
+      : view_facade<generate_n_view<G>, finite>
     {
-        /// \addtogroup group-views
-        /// @{
-        template<typename G>
-        struct generate_n_view
-          : view_facade<generate_n_view<G>, finite>
+    private:
+      friend range_access;
+      using result_t = invoke_result_t<G &>;
+      movesemiregular_t<G> gen_;
+      detail::non_propagating_cache<result_t> val_;
+      std::size_t n_;
+      struct cursor
+      {
+      private:
+        generate_n_view *rng_;
+      public:
+        cursor() = default;
+        explicit cursor(generate_n_view &rng)
+          : rng_(&rng)
+        {}
+        bool equal(default_sentinel) const
         {
-        private:
-            friend range_access;
-            using result_t = invoke_result_t<G &>;
-            movesemiregular_t<G> gen_;
-            detail::non_propagating_cache<result_t> val_;
-            std::size_t n_;
-            struct cursor
-            {
-            private:
-                generate_n_view *rng_;
-            public:
-                cursor() = default;
-                explicit cursor(generate_n_view &rng)
-                  : rng_(&rng)
-                {}
-                bool equal(default_sentinel) const
-                {
-                    return 0 == rng_->n_;
-                }
-                result_t &&read() const
-                {
-                    if (!rng_->val_)
-                        rng_->val_.emplace(rng_->gen_());
-                    return static_cast<result_t &&>(
-                        static_cast<result_t &>(*rng_->val_));
-                }
-                void next()
-                {
-                    RANGES_EXPECT(0 != rng_->n_);
-                    --rng_->n_;
-                    rng_->val_.reset();
-                }
-            };
-            cursor begin_cursor()
-            {
-                return cursor{*this};
-            }
-        public:
-            generate_n_view() = default;
-            explicit generate_n_view(G g, std::size_t n)
-              : gen_(std::move(g)), n_(n)
-            {}
-            result_t &cached()
-            {
-                return *val_;
-            }
-            std::size_t size() const
-            {
-                return n_;
-            }
-        };
-
-        namespace view
-        {
-            struct generate_n_fn
-            {
-                template<typename G,
-                    CONCEPT_REQUIRES_(generate_fn::Concept<G>())>
-                generate_n_view<G> operator()(G g, std::size_t n) const
-                {
-                    return generate_n_view<G>{std::move(g), n};
-                }
-            #ifndef RANGES_DOXYGEN_INVOKED
-                template<typename G,
-                    CONCEPT_REQUIRES_(!generate_fn::Concept<G>())>
-                void operator()(G, std::size_t) const
-                {
-                    generate_fn::check<G>();
-                }
-            #endif
-            };
-
-            /// \relates generate_n_fn
-            /// \ingroup group-views
-            RANGES_INLINE_VARIABLE(generate_n_fn, generate_n)
+          return 0 == rng_->n_;
         }
-        /// @}
+        result_t &&read() const
+        {
+          if (!rng_->val_)
+            rng_->val_.emplace(rng_->gen_());
+          return static_cast<result_t &&>(
+            static_cast<result_t &>(*rng_->val_));
+        }
+        void next()
+        {
+          RANGES_EXPECT(0 != rng_->n_);
+          --rng_->n_;
+          rng_->val_.reset();
+        }
+      };
+      cursor begin_cursor()
+      {
+        return cursor{*this};
+      }
+    public:
+      generate_n_view() = default;
+      explicit generate_n_view(G g, std::size_t n)
+        : gen_(std::move(g)), n_(n)
+      {}
+      result_t &cached()
+      {
+        return *val_;
+      }
+      std::size_t size() const
+      {
+        return n_;
+      }
+    };
+
+    namespace view
+    {
+      struct generate_n_fn
+      {
+        template<typename G,
+          CONCEPT_REQUIRES_(generate_fn::Concept<G>())>
+        generate_n_view<G> operator()(G g, std::size_t n) const
+        {
+          return generate_n_view<G>{std::move(g), n};
+        }
+      #ifndef RANGES_DOXYGEN_INVOKED
+        template<typename G,
+          CONCEPT_REQUIRES_(!generate_fn::Concept<G>())>
+        void operator()(G, std::size_t) const
+        {
+          generate_fn::check<G>();
+        }
+      #endif
+      };
+
+      /// \relates generate_n_fn
+      /// \ingroup group-views
+      RANGES_INLINE_VARIABLE(generate_n_fn, generate_n)
     }
+    /// @}
+  }
 }
 
 RANGES_SATISFY_BOOST_RANGE(::ranges::v3::generate_n_view)

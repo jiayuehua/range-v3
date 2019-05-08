@@ -44,60 +44,60 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    namespace aux
     {
-        namespace aux
+      struct merge_n_fn
+      {
+        template<typename I0, typename I1, typename O, typename C = ordered_less,
+          typename P0 = ident, typename P1 = ident,
+          CONCEPT_REQUIRES_(
+            Mergeable<I0, I1, O, C, P0, P1>()
+          )>
+        tagged_tuple<tag::in1(I0), tag::in2(I1), tag::out(O)>
+        operator()(I0 begin0, difference_type_t<I0> n0,
+               I1 begin1, difference_type_t<I1> n1,
+               O out, C r = C{}, P0 p0 = P0{}, P1 p1 = P1{}) const
         {
-            struct merge_n_fn
+          using T = tagged_tuple<tag::in1(I0), tag::in2(I1), tag::out(O)>;
+          auto n0orig = n0;
+          auto n1orig = n1;
+          auto b0 = uncounted(begin0);
+          auto b1 = uncounted(begin1);
+          while(true)
+          {
+            if(0 == n0)
             {
-                template<typename I0, typename I1, typename O, typename C = ordered_less,
-                    typename P0 = ident, typename P1 = ident,
-                    CONCEPT_REQUIRES_(
-                        Mergeable<I0, I1, O, C, P0, P1>()
-                    )>
-                tagged_tuple<tag::in1(I0), tag::in2(I1), tag::out(O)>
-                operator()(I0 begin0, difference_type_t<I0> n0,
-                           I1 begin1, difference_type_t<I1> n1,
-                           O out, C r = C{}, P0 p0 = P0{}, P1 p1 = P1{}) const
-                {
-                    using T = tagged_tuple<tag::in1(I0), tag::in2(I1), tag::out(O)>;
-                    auto n0orig = n0;
-                    auto n1orig = n1;
-                    auto b0 = uncounted(begin0);
-                    auto b1 = uncounted(begin1);
-                    while(true)
-                    {
-                        if(0 == n0)
-                        {
-                            auto res = copy_n(b1, n1, out);
-                            begin0 = recounted(begin0, b0, n0orig);
-                            begin1 = recounted(begin1, res.first, n1orig);
-                            return T{begin0, begin1, res.second};
-                        }
-                        if(0 == n1)
-                        {
-                            auto res = copy_n(b0, n0, out);
-                            begin0 = recounted(begin0, res.first, n0orig);
-                            begin1 = recounted(begin1, b1, n1orig);
-                            return T{begin0, begin1, res.second};
-                        }
-                        if(invoke(r, invoke(p1, *b1), invoke(p0, *b0)))
-                        {
-                            *out = *b1;
-                            ++b1; ++out; --n1;
-                        }
-                        else
-                        {
-                            *out = *b0;
-                            ++b0; ++out; --n0;
-                        }
-                    }
-                }
-            };
-
-            RANGES_INLINE_VARIABLE(merge_n_fn, merge_n)
+              auto res = copy_n(b1, n1, out);
+              begin0 = recounted(begin0, b0, n0orig);
+              begin1 = recounted(begin1, res.first, n1orig);
+              return T{begin0, begin1, res.second};
+            }
+            if(0 == n1)
+            {
+              auto res = copy_n(b0, n0, out);
+              begin0 = recounted(begin0, res.first, n0orig);
+              begin1 = recounted(begin1, b1, n1orig);
+              return T{begin0, begin1, res.second};
+            }
+            if(invoke(r, invoke(p1, *b1), invoke(p0, *b0)))
+            {
+              *out = *b1;
+              ++b1; ++out; --n1;
+            }
+            else
+            {
+              *out = *b0;
+              ++b0; ++out; --n0;
+            }
+          }
         }
-    } // namespace v3
+      };
+
+      RANGES_INLINE_VARIABLE(merge_n_fn, merge_n)
+    }
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

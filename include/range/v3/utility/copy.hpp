@@ -20,37 +20,37 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-utility
+    /// @{
+    namespace aux
     {
-        /// \addtogroup group-utility
-        /// @{
-        namespace aux
+      struct copy_fn : copy_tag
+      {
+        template<typename T,
+          CONCEPT_REQUIRES_(Constructible<detail::decay_t<T>, T>())>
+        detail::decay_t<T> operator()(T && t) const
         {
-            struct copy_fn : copy_tag
-            {
-                template<typename T,
-                    CONCEPT_REQUIRES_(Constructible<detail::decay_t<T>, T>())>
-                detail::decay_t<T> operator()(T && t) const
-                {
-                    return static_cast<T &&>(t);
-                }
-            };
-
-            /// \ingroup group-utility
-            /// \sa `copy_fn`
-            RANGES_INLINE_VARIABLE(copy_fn, copy)
-
-            /// \ingroup group-utility
-            /// \sa `copy_fn`
-            template<typename T,
-                CONCEPT_REQUIRES_(Constructible<detail::decay_t<T>, T>())>
-            detail::decay_t<T> operator|(T && t, copy_fn)
-            {
-                return static_cast<T &&>(t);
-            }
+          return static_cast<T &&>(t);
         }
-        /// @}
+      };
+
+      /// \ingroup group-utility
+      /// \sa `copy_fn`
+      RANGES_INLINE_VARIABLE(copy_fn, copy)
+
+      /// \ingroup group-utility
+      /// \sa `copy_fn`
+      template<typename T,
+        CONCEPT_REQUIRES_(Constructible<detail::decay_t<T>, T>())>
+      detail::decay_t<T> operator|(T && t, copy_fn)
+      {
+        return static_cast<T &&>(t);
+      }
     }
+    /// @}
+  }
 }
 
 #endif

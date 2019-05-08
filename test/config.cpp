@@ -15,5 +15,5 @@ RANGES_DEPRECATED("compile test for \"RANGES_DEPRECATED\"") void foo() {}
 
 int main()
 {
-    return 0;
+  return 0;
 }

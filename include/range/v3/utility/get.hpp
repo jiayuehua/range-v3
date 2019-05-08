@@ -19,30 +19,30 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-utility Utility
+    /// @{
+    ///
+    template<typename T>
+    T & get(meta::id_t<T> & value)
     {
-        /// \addtogroup group-utility Utility
-        /// @{
-        ///
-        template<typename T>
-        T & get(meta::id_t<T> & value)
-        {
-            return value;
-        }
-
-        template<typename T>
-        T const & get(meta::id_t<T> const & value)
-        {
-            return value;
-        }
-
-        template<typename T>
-        T && get(meta::id_t<T> && value)
-        {
-            return std::move(value);
-        }
-        /// @}
+      return value;
     }
+
+    template<typename T>
+    T const & get(meta::id_t<T> const & value)
+    {
+      return value;
+    }
+
+    template<typename T>
+    T && get(meta::id_t<T> && value)
+    {
+      return std::move(value);
+    }
+    /// @}
+  }
 }
 
 #endif

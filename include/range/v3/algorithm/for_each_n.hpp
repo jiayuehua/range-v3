@@ -26,43 +26,43 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct for_each_n_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct for_each_n_fn
-        {
-            template<typename I, typename F, typename P = ident,
-                CONCEPT_REQUIRES_(InputIterator<I>() &&
-                    MoveIndirectInvocable<F, projected<I, P>>())>
-            I operator()(I begin, difference_type_t<I> n, F fun, P proj = P{}) const
-            {
-                RANGES_EXPECT(0 <= n);
-                auto norig = n;
-                auto b = uncounted(begin);
-                for(; 0 < n; ++b, --n)
-                    invoke(fun, invoke(proj, *b));
-                return recounted(begin, b, norig);
-            }
+      template<typename I, typename F, typename P = ident,
+        CONCEPT_REQUIRES_(InputIterator<I>() &&
+          MoveIndirectInvocable<F, projected<I, P>>())>
+      I operator()(I begin, difference_type_t<I> n, F fun, P proj = P{}) const
+      {
+        RANGES_EXPECT(0 <= n);
+        auto norig = n;
+        auto b = uncounted(begin);
+        for(; 0 < n; ++b, --n)
+          invoke(fun, invoke(proj, *b));
+        return recounted(begin, b, norig);
+      }
 
-            template<typename Rng, typename F, typename P = ident,
-                CONCEPT_REQUIRES_(InputRange<Rng>() &&
-                    MoveIndirectInvocable<F, projected<iterator_t<Rng>, P>>())>
-            safe_iterator_t<Rng>
-            operator()(Rng &&rng, range_difference_type_t<Rng> n, F fun, P proj = P{}) const
-            {
-                if (SizedRange<Rng>())
-                    RANGES_EXPECT(n <= distance(rng));
+      template<typename Rng, typename F, typename P = ident,
+        CONCEPT_REQUIRES_(InputRange<Rng>() &&
+          MoveIndirectInvocable<F, projected<iterator_t<Rng>, P>>())>
+      safe_iterator_t<Rng>
+      operator()(Rng &&rng, range_difference_type_t<Rng> n, F fun, P proj = P{}) const
+      {
+        if (SizedRange<Rng>())
+          RANGES_EXPECT(n <= distance(rng));
 
-                return (*this)(begin(rng), n, detail::move(fun), detail::move(proj));
-            }
-        };
+        return (*this)(begin(rng), n, detail::move(fun), detail::move(proj));
+      }
+    };
 
-        /// \sa `for_each_n_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<for_each_n_fn>, for_each_n)
-        /// @}
-    } // namespace v3
+    /// \sa `for_each_n_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<for_each_n_fn>, for_each_n)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

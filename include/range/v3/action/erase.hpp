@@ -22,79 +22,79 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \cond
+    namespace adl_erase_detail
     {
-        /// \cond
-        namespace adl_erase_detail
+      template<typename Cont, typename I,
+        CONCEPT_REQUIRES_(LvalueContainerLike<Cont>() && ForwardIterator<I>())>
+      auto erase(Cont && cont, I it) ->
+        decltype(unwrap_reference(cont).erase(it))
+      {
+        return unwrap_reference(cont).erase(it);
+      }
+
+      template<typename Cont, typename I, typename S,
+        CONCEPT_REQUIRES_(LvalueContainerLike<Cont>() && ForwardIterator<I>() &&
+          Sentinel<S, I>())>
+      auto erase(Cont && cont, I begin, S end) ->
+        decltype(unwrap_reference(cont).erase(begin, end))
+      {
+        return unwrap_reference(cont).erase(begin, end);
+      }
+
+      struct erase_fn
+      {
+        // TODO associative erase by key
+        template<typename Rng, typename I,
+          CONCEPT_REQUIRES_(Range<Rng>() && ForwardIterator<I>())>
+        auto operator()(Rng && rng, I it) const ->
+          decltype(erase(static_cast<Rng&&>(rng), it))
         {
-            template<typename Cont, typename I,
-                CONCEPT_REQUIRES_(LvalueContainerLike<Cont>() && ForwardIterator<I>())>
-            auto erase(Cont && cont, I it) ->
-                decltype(unwrap_reference(cont).erase(it))
-            {
-                return unwrap_reference(cont).erase(it);
-            }
-
-            template<typename Cont, typename I, typename S,
-                CONCEPT_REQUIRES_(LvalueContainerLike<Cont>() && ForwardIterator<I>() &&
-                    Sentinel<S, I>())>
-            auto erase(Cont && cont, I begin, S end) ->
-                decltype(unwrap_reference(cont).erase(begin, end))
-            {
-                return unwrap_reference(cont).erase(begin, end);
-            }
-
-            struct erase_fn
-            {
-                // TODO associative erase by key
-                template<typename Rng, typename I,
-                    CONCEPT_REQUIRES_(Range<Rng>() && ForwardIterator<I>())>
-                auto operator()(Rng && rng, I it) const ->
-                    decltype(erase(static_cast<Rng&&>(rng), it))
-                {
-                    return erase(static_cast<Rng&&>(rng), it);
-                }
-                template<typename Rng, typename I, typename S,
-                    CONCEPT_REQUIRES_(Range<Rng>() && ForwardIterator<I>() &&
-                        Sentinel<S, I>())>
-                auto operator()(Rng && rng, I begin, S end) const ->
-                    decltype(erase(static_cast<Rng&&>(rng), begin, end))
-                {
-                    return erase(static_cast<Rng&&>(rng), begin, end);
-                }
-            };
+          return erase(static_cast<Rng&&>(rng), it);
         }
-        /// \endcond
-
-        /// \ingroup group-actions
-        RANGES_INLINE_VARIABLE(adl_erase_detail::erase_fn, erase)
-
-        namespace action
+        template<typename Rng, typename I, typename S,
+          CONCEPT_REQUIRES_(Range<Rng>() && ForwardIterator<I>() &&
+            Sentinel<S, I>())>
+        auto operator()(Rng && rng, I begin, S end) const ->
+          decltype(erase(static_cast<Rng&&>(rng), begin, end))
         {
-            using ranges::erase;
+          return erase(static_cast<Rng&&>(rng), begin, end);
         }
+      };
+    }
+    /// \endcond
 
-        /// \addtogroup group-concepts
-        /// @{
-        namespace concepts
-        {
-            struct ErasableRange
-              : refines<Range(_1)>
-            {
-                template<typename Rng, typename...Rest>
-                using result_t =
-                    decltype(ranges::erase(std::declval<Rng&>(), std::declval<Rest>()...));
+    /// \ingroup group-actions
+    RANGES_INLINE_VARIABLE(adl_erase_detail::erase_fn, erase)
 
-                template<typename Rng, typename...Rest>
-                auto requires_() ->
-                    meta::void_<result_t<Rng, Rest...>>;
-            };
-        }
+    namespace action
+    {
+      using ranges::erase;
+    }
+
+    /// \addtogroup group-concepts
+    /// @{
+    namespace concepts
+    {
+      struct ErasableRange
+        : refines<Range(_1)>
+      {
+        template<typename Rng, typename...Rest>
+        using result_t =
+          decltype(ranges::erase(std::declval<Rng&>(), std::declval<Rest>()...));
 
         template<typename Rng, typename...Rest>
-        using ErasableRange = concepts::models<concepts::ErasableRange, Rng, Rest...>;
-        /// @}
+        auto requires_() ->
+          meta::void_<result_t<Rng, Rest...>>;
+      };
     }
+
+    template<typename Rng, typename...Rest>
+    using ErasableRange = concepts::models<concepts::ErasableRange, Rng, Rest...>;
+    /// @}
+  }
 }
 
 #endif

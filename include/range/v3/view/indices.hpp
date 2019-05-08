@@ -25,94 +25,94 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    namespace view
     {
-        namespace view
+      /// Half-open range of indices: [from, to).
+      struct indices_fn
+        : iota_view<std::ptrdiff_t>
+      {
+        indices_fn() = default;
+
+        template<typename Val, CONCEPT_REQUIRES_(Integral<Val>())>
+        auto operator()(Val from, Val to) const
+        RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
+        (
+          detail::take_exactly_view_<iota_view<Val>, true>
+            {iota_view<Val>{from}, detail::ints_open_distance_(from, to)}
+        )
+
+        template<typename Val, typename Self = indices_fn,
+          CONCEPT_REQUIRES_(Integral<Val>())>
+        auto operator()(Val to) const
+        RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
+        (
+          Self{}(Val(), to)
+        )
+
+      #ifndef RANGES_DOXYGEN_INVOKED
+        template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
+        void operator()(Val) const
         {
-            /// Half-open range of indices: [from, to).
-            struct indices_fn
-              : iota_view<std::ptrdiff_t>
-            {
-                indices_fn() = default;
+          CONCEPT_ASSERT_MSG(Integral<Val>(),
+            "The object passed to view::indices must be Integral");
+        }
+        template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
+        void operator()(Val, Val) const
+        {
+          CONCEPT_ASSERT_MSG(Integral<Val>(),
+            "The object passed to view::indices must be Integral");
+        }
+      #endif
+      };
 
-                template<typename Val, CONCEPT_REQUIRES_(Integral<Val>())>
-                auto operator()(Val from, Val to) const
-                RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
-                (
-                    detail::take_exactly_view_<iota_view<Val>, true>
-                        {iota_view<Val>{from}, detail::ints_open_distance_(from, to)}
-                )
+      /// Inclusive range of indices: [from, to].
+      struct closed_indices_fn
+        : iota_view<std::ptrdiff_t>
+      {
+        template<typename Val, CONCEPT_REQUIRES_(Integral<Val>())>
+        auto operator()(Val from, Val to) const
+        RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
+        (
+          detail::take_exactly_view_<iota_view<Val>, true>
+            {iota_view<Val>{from}, detail::ints_closed_distance_(from, to)}
+        )
 
-                template<typename Val, typename Self = indices_fn,
-                    CONCEPT_REQUIRES_(Integral<Val>())>
-                auto operator()(Val to) const
-                RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
-                (
-                    Self{}(Val(), to)
-                )
+        template<typename Val, typename Self = closed_indices_fn,
+          CONCEPT_REQUIRES_(Integral<Val>())>
+        auto operator()(Val to) const
+        RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
+        (
+          Self{}(Val(), to)
+        )
 
-            #ifndef RANGES_DOXYGEN_INVOKED
-                template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
-                void operator()(Val) const
-                {
-                    CONCEPT_ASSERT_MSG(Integral<Val>(),
-                        "The object passed to view::indices must be Integral");
-                }
-                template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
-                void operator()(Val, Val) const
-                {
-                    CONCEPT_ASSERT_MSG(Integral<Val>(),
-                        "The object passed to view::indices must be Integral");
-                }
-            #endif
-            };
+      #ifndef RANGES_DOXYGEN_INVOKED
+        template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
+        void operator()(Val) const
+        {
+          CONCEPT_ASSERT_MSG(Integral<Val>(),
+            "The object passed to view::closed_indices must be Integral");
+        }
+        template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
+        void operator()(Val, Val) const
+        {
+          CONCEPT_ASSERT_MSG(Integral<Val>(),
+            "The object passed to view::closed_indices must be Integral");
+        }
+      #endif
+      };
 
-            /// Inclusive range of indices: [from, to].
-            struct closed_indices_fn
-              : iota_view<std::ptrdiff_t>
-            {
-                template<typename Val, CONCEPT_REQUIRES_(Integral<Val>())>
-                auto operator()(Val from, Val to) const
-                RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
-                (
-                    detail::take_exactly_view_<iota_view<Val>, true>
-                        {iota_view<Val>{from}, detail::ints_closed_distance_(from, to)}
-                )
+      /// \relates indices_fn
+      /// \ingroup group-views
+      RANGES_INLINE_VARIABLE(indices_fn, indices)
 
-                template<typename Val, typename Self = closed_indices_fn,
-                    CONCEPT_REQUIRES_(Integral<Val>())>
-                auto operator()(Val to) const
-                RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
-                (
-                    Self{}(Val(), to)
-                )
+      /// \relates closed_indices_fn
+      /// \ingroup group-views
+      RANGES_INLINE_VARIABLE(closed_indices_fn, closed_indices)
 
-            #ifndef RANGES_DOXYGEN_INVOKED
-                template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
-                void operator()(Val) const
-                {
-                    CONCEPT_ASSERT_MSG(Integral<Val>(),
-                        "The object passed to view::closed_indices must be Integral");
-                }
-                template<typename Val, CONCEPT_REQUIRES_(!Integral<Val>())>
-                void operator()(Val, Val) const
-                {
-                    CONCEPT_ASSERT_MSG(Integral<Val>(),
-                        "The object passed to view::closed_indices must be Integral");
-                }
-            #endif
-            };
-
-            /// \relates indices_fn
-            /// \ingroup group-views
-            RANGES_INLINE_VARIABLE(indices_fn, indices)
-
-            /// \relates closed_indices_fn
-            /// \ingroup group-views
-            RANGES_INLINE_VARIABLE(closed_indices_fn, closed_indices)
-
-        }  // namespace view
-    }
+    }  // namespace view
+  }
 }
 
 #endif  // RANGES_V3_VIEW_INDICES_HPP

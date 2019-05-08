@@ -31,34 +31,34 @@
 template<class Iter, class Sent = Iter>
 void test()
 {
-    int ir[] = {5, 6, 7, 8, 9};
-    constexpr auto s = ranges::size(ir);
-    {
-        int ia[] = {1, 2, 3, 4, 5};
-        ranges::iota(Iter(ia), Sent(ia + s), 5);
-        CHECK(ranges::equal(ia, ir));
-    }
+  int ir[] = {5, 6, 7, 8, 9};
+  constexpr auto s = ranges::size(ir);
+  {
+    int ia[] = {1, 2, 3, 4, 5};
+    ranges::iota(Iter(ia), Sent(ia + s), 5);
+    CHECK(ranges::equal(ia, ir));
+  }
 
-    {
-        int ia[] = {1, 2, 3, 4, 5};
-        auto rng = ranges::make_iterator_range(Iter(ia), Sent(ia + s));
-        ranges::iota(rng, 5);
-        CHECK(ranges::equal(ia, ir));
-    }
+  {
+    int ia[] = {1, 2, 3, 4, 5};
+    auto rng = ranges::make_iterator_range(Iter(ia), Sent(ia + s));
+    ranges::iota(rng, 5);
+    CHECK(ranges::equal(ia, ir));
+  }
 }
 
 int main()
 {
-    test<input_iterator<int*> >();
-    test<forward_iterator<int*> >();
-    test<bidirectional_iterator<int*> >();
-    test<random_access_iterator<int*> >();
-    test<int*>();
+  test<input_iterator<int*> >();
+  test<forward_iterator<int*> >();
+  test<bidirectional_iterator<int*> >();
+  test<random_access_iterator<int*> >();
+  test<int*>();
 
-    test<input_iterator<int*>, sentinel<int*> >();
-    test<forward_iterator<int*>, sentinel<int*> >();
-    test<bidirectional_iterator<int*>, sentinel<int*> >();
-    test<random_access_iterator<int*>, sentinel<int*> >();
+  test<input_iterator<int*>, sentinel<int*> >();
+  test<forward_iterator<int*>, sentinel<int*> >();
+  test<bidirectional_iterator<int*>, sentinel<int*> >();
+  test<random_access_iterator<int*>, sentinel<int*> >();
 
-    return ::test_result();
+  return ::test_result();
 }

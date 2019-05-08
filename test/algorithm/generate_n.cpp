@@ -27,52 +27,52 @@
 
 struct gen_test
 {
-    int i_;
-    gen_test() = default;
-    gen_test(int i) : i_(i) {}
-    int operator()() {return i_++;}
+  int i_;
+  gen_test() = default;
+  gen_test(int i) : i_(i) {}
+  int operator()() {return i_++;}
 };
 
 template<class Iter, class Sent = Iter>
 void
 test()
 {
-    const unsigned n = 4;
-    int ia[n] = {0};
-    std::pair<Iter, gen_test> res = ranges::generate_n(Iter(ia), n, gen_test(1));
-    CHECK(ia[0] == 1);
-    CHECK(ia[1] == 2);
-    CHECK(ia[2] == 3);
-    CHECK(ia[3] == 4);
-    CHECK(res.first == Iter(ia + n));
-    CHECK(res.second.i_ == 5);
+  const unsigned n = 4;
+  int ia[n] = {0};
+  std::pair<Iter, gen_test> res = ranges::generate_n(Iter(ia), n, gen_test(1));
+  CHECK(ia[0] == 1);
+  CHECK(ia[1] == 2);
+  CHECK(ia[2] == 3);
+  CHECK(ia[3] == 4);
+  CHECK(res.first == Iter(ia + n));
+  CHECK(res.second.i_ == 5);
 }
 
 void test2()
 {
-    // Test ranges::generate with a genuine output range
-    std::vector<int> v;
-    ranges::generate_n(ranges::back_inserter(v), 5, gen_test(1));
-    CHECK(v.size() == 5u);
-    CHECK(v[0] == 1);
-    CHECK(v[1] == 2);
-    CHECK(v[2] == 3);
-    CHECK(v[3] == 4);
-    CHECK(v[4] == 5);
+  // Test ranges::generate with a genuine output range
+  std::vector<int> v;
+  ranges::generate_n(ranges::back_inserter(v), 5, gen_test(1));
+  CHECK(v.size() == 5u);
+  CHECK(v[0] == 1);
+  CHECK(v[1] == 2);
+  CHECK(v[2] == 3);
+  CHECK(v[3] == 4);
+  CHECK(v[4] == 5);
 }
 
 int main()
 {
-    test<forward_iterator<int*> >();
-    test<bidirectional_iterator<int*> >();
-    test<random_access_iterator<int*> >();
-    test<int*>();
+  test<forward_iterator<int*> >();
+  test<bidirectional_iterator<int*> >();
+  test<random_access_iterator<int*> >();
+  test<int*>();
 
-    test<forward_iterator<int*>, sentinel<int*> >();
-    test<bidirectional_iterator<int*>, sentinel<int*> >();
-    test<random_access_iterator<int*>, sentinel<int*> >();
+  test<forward_iterator<int*>, sentinel<int*> >();
+  test<bidirectional_iterator<int*>, sentinel<int*> >();
+  test<random_access_iterator<int*>, sentinel<int*> >();
 
-    test2();
+  test2();
 
-    return ::test_result();
+  return ::test_result();
 }

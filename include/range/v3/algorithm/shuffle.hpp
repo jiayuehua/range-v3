@@ -27,52 +27,52 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct shuffle_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct shuffle_fn
+      template<typename I, typename S, typename Gen = detail::default_random_engine&,
+        CONCEPT_REQUIRES_(RandomAccessIterator<I>() && Sentinel<S, I>() &&
+          Permutable<I>() && UniformRandomNumberGenerator<Gen>() &&
+          ConvertibleTo<
+            concepts::UniformRandomNumberGenerator::result_t<Gen>,
+            difference_type_t<I>>())>
+      I operator()(I const begin, S const end,
+        Gen && gen = detail::get_random_engine()) const
+      {
+        auto mid = begin;
+        if(mid == end)
+          return mid;
+        std::uniform_int_distribution<difference_type_t<I>> uid{};
+        using param_t = typename decltype(uid)::param_type;
+        while(++mid != end)
         {
-            template<typename I, typename S, typename Gen = detail::default_random_engine&,
-                CONCEPT_REQUIRES_(RandomAccessIterator<I>() && Sentinel<S, I>() &&
-                    Permutable<I>() && UniformRandomNumberGenerator<Gen>() &&
-                    ConvertibleTo<
-                        concepts::UniformRandomNumberGenerator::result_t<Gen>,
-                        difference_type_t<I>>())>
-            I operator()(I const begin, S const end,
-                Gen && gen = detail::get_random_engine()) const
-            {
-                auto mid = begin;
-                if(mid == end)
-                    return mid;
-                std::uniform_int_distribution<difference_type_t<I>> uid{};
-                using param_t = typename decltype(uid)::param_type;
-                while(++mid != end)
-                {
-                    if(auto const i = uid(gen, param_t{0, mid - begin}))
-                        ranges::iter_swap(mid - i, mid);
-                }
-                return mid;
-            }
+          if(auto const i = uid(gen, param_t{0, mid - begin}))
+            ranges::iter_swap(mid - i, mid);
+        }
+        return mid;
+      }
 
-            template<typename Rng, typename Gen = detail::default_random_engine&,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(RandomAccessRange<Rng>() && Permutable<I>() &&
-                    UniformRandomNumberGenerator<Gen>() && ConvertibleTo<
-                        concepts::UniformRandomNumberGenerator::result_t<Gen>,
-                        difference_type_t<I>>())>
-            safe_iterator_t<Rng>
-            operator()(Rng && rng, Gen && rand = detail::get_random_engine()) const
-            {
-                return (*this)(begin(rng), end(rng), static_cast<Gen&&>(rand));
-            }
-        };
+      template<typename Rng, typename Gen = detail::default_random_engine&,
+        typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(RandomAccessRange<Rng>() && Permutable<I>() &&
+          UniformRandomNumberGenerator<Gen>() && ConvertibleTo<
+            concepts::UniformRandomNumberGenerator::result_t<Gen>,
+            difference_type_t<I>>())>
+      safe_iterator_t<Rng>
+      operator()(Rng && rng, Gen && rand = detail::get_random_engine()) const
+      {
+        return (*this)(begin(rng), end(rng), static_cast<Gen&&>(rand));
+      }
+    };
 
-        /// \sa `shuffle_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<shuffle_fn>, shuffle)
-        /// @}
-    } // namespace v3
+    /// \sa `shuffle_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<shuffle_fn>, shuffle)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

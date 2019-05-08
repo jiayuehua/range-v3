@@ -18,31 +18,31 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    namespace detail
     {
-        namespace detail
-        {
-            namespace _adl_get_
-            {
-                template<class> void get();
+      namespace _adl_get_
+      {
+        template<class> void get();
 
-                template<std::size_t I, typename Tuple>
-                constexpr auto adl_get(Tuple &&t)
-                RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
-                (
-                    get<I>(static_cast<Tuple &&>(t))
-                )
+        template<std::size_t I, typename Tuple>
+        constexpr auto adl_get(Tuple &&t)
+        RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
+        (
+          get<I>(static_cast<Tuple &&>(t))
+        )
 
-                template<typename T, typename Tuple>
-                constexpr auto adl_get(Tuple &&t)
-                RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
-                (
-                    get<T>(static_cast<Tuple &&>(t))
-                )
-            }
-            using _adl_get_::adl_get;
-        }
+        template<typename T, typename Tuple>
+        constexpr auto adl_get(Tuple &&t)
+        RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
+        (
+          get<T>(static_cast<Tuple &&>(t))
+        )
+      }
+      using _adl_get_::adl_get;
     }
+  }
 }
 
 #endif // RANGES_V3_DETAIL_ADL_GET_HPP

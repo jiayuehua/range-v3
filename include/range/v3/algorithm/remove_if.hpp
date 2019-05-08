@@ -27,52 +27,52 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \ingroup group-concepts
+    template<typename I, typename C, typename P = ident>
+    using RemovableIf = meta::strict_and<
+      ForwardIterator<I>,
+      IndirectPredicate<C, projected<I, P>>,
+      Permutable<I>>;
+
+    /// \addtogroup group-algorithms
+    /// @{
+    struct remove_if_fn
     {
-        /// \ingroup group-concepts
-        template<typename I, typename C, typename P = ident>
-        using RemovableIf = meta::strict_and<
-            ForwardIterator<I>,
-            IndirectPredicate<C, projected<I, P>>,
-            Permutable<I>>;
-
-        /// \addtogroup group-algorithms
-        /// @{
-        struct remove_if_fn
+      template<typename I, typename S, typename C, typename P = ident,
+        CONCEPT_REQUIRES_(RemovableIf<I, C, P>() && Sentinel<S, I>())>
+      I operator()(I begin, S end, C pred, P proj = P{}) const
+      {
+        begin = find_if(std::move(begin), end, std::ref(pred), std::ref(proj));
+        if(begin != end)
         {
-            template<typename I, typename S, typename C, typename P = ident,
-                CONCEPT_REQUIRES_(RemovableIf<I, C, P>() && Sentinel<S, I>())>
-            I operator()(I begin, S end, C pred, P proj = P{}) const
+          for(I i = next(begin); i != end; ++i)
+          {
+            if(!(invoke(pred, invoke(proj, *i))))
             {
-                begin = find_if(std::move(begin), end, std::ref(pred), std::ref(proj));
-                if(begin != end)
-                {
-                    for(I i = next(begin); i != end; ++i)
-                    {
-                        if(!(invoke(pred, invoke(proj, *i))))
-                        {
-                            *begin = iter_move(i);
-                            ++begin;
-                        }
-                    }
-                }
-                return begin;
+              *begin = iter_move(i);
+              ++begin;
             }
+          }
+        }
+        return begin;
+      }
 
-            template<typename Rng, typename C, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(RemovableIf<I, C, P>() && ForwardRange<Rng>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng, C pred, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
-            }
-        };
+      template<typename Rng, typename C, typename P = ident,
+        typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(RemovableIf<I, C, P>() && ForwardRange<Rng>())>
+      safe_iterator_t<Rng> operator()(Rng &&rng, C pred, P proj = P{}) const
+      {
+        return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
+      }
+    };
 
-        /// \sa `remove_if_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<remove_if_fn>, remove_if)
-        /// @}
-    } // namespace v3
+    /// \sa `remove_if_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<remove_if_fn>, remove_if)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

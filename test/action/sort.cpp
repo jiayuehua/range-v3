@@ -26,44 +26,44 @@
 
 int main()
 {
-    using namespace ranges;
-    std::mt19937 gen;
+  using namespace ranges;
+  std::mt19937 gen;
 
-    std::vector<int> v = view::ints(0,100);
-    v |= action::shuffle(gen);
-    CHECK(!is_sorted(v));
+  std::vector<int> v = view::ints(0,100);
+  v |= action::shuffle(gen);
+  CHECK(!is_sorted(v));
 
-    auto v2 = v | copy | action::sort;
-    CHECK(size(v2) == size(v));
-    CHECK(is_sorted(v2));
-    CHECK(!is_sorted(v));
-    ::models<concepts::Same>(v, v2);
+  auto v2 = v | copy | action::sort;
+  CHECK(size(v2) == size(v));
+  CHECK(is_sorted(v2));
+  CHECK(!is_sorted(v));
+  ::models<concepts::Same>(v, v2);
 
-    v |= action::sort;
-    CHECK(is_sorted(v));
+  v |= action::sort;
+  CHECK(is_sorted(v));
 
-    v |= action::shuffle(gen);
-    CHECK(!is_sorted(v));
+  v |= action::shuffle(gen);
+  CHECK(!is_sorted(v));
 
-    v = v | move | action::sort(std::less<int>());
-    CHECK(is_sorted(v));
-    CHECK(equal(v, v2));
+  v = v | move | action::sort(std::less<int>());
+  CHECK(is_sorted(v));
+  CHECK(equal(v, v2));
 
-    // Container algorithms can also be called directly
-    // in which case they take and return by reference
-    shuffle(v, gen);
-    CHECK(!is_sorted(v));
-    auto & v3 = action::sort(v);
-    CHECK(is_sorted(v));
-    CHECK(&v3 == &v);
+  // Container algorithms can also be called directly
+  // in which case they take and return by reference
+  shuffle(v, gen);
+  CHECK(!is_sorted(v));
+  auto & v3 = action::sort(v);
+  CHECK(is_sorted(v));
+  CHECK(&v3 == &v);
 
-    auto ref=std::ref(v);
-    ref |= action::sort;
+  auto ref=std::ref(v);
+  ref |= action::sort;
 
-    // Can pipe a view to a "container" algorithm.
-    action::sort(v, std::greater<int>());
-    v | view::stride(2) | action::sort;
-    check_equal(view::take(v, 10), {1,98,3,96,5,94,7,92,9,90});
+  // Can pipe a view to a "container" algorithm.
+  action::sort(v, std::greater<int>());
+  v | view::stride(2) | action::sort;
+  check_equal(view::take(v, 10), {1,98,3,96,5,94,7,92,9,90});
 
-    return ::test_result();
+  return ::test_result();
 }

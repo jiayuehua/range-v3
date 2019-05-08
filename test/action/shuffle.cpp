@@ -23,48 +23,48 @@
 
 int main()
 {
-    using namespace ranges;
-    std::mt19937 gen;
+  using namespace ranges;
+  std::mt19937 gen;
 
-    // "Ints" view vs. shuffled
-    std::vector<int> v = view::ints(0,100);
-    auto v2 = v | copy | action::shuffle(gen);
-    CHECK(is_sorted(v));
-    CHECK(!is_sorted(v2));
-    CHECK(size(v2) == size(v));
-    ::models<concepts::Same>(v, v2);
-    CHECK(!equal(v, v2));
+  // "Ints" view vs. shuffled
+  std::vector<int> v = view::ints(0,100);
+  auto v2 = v | copy | action::shuffle(gen);
+  CHECK(is_sorted(v));
+  CHECK(!is_sorted(v2));
+  CHECK(size(v2) == size(v));
+  ::models<concepts::Same>(v, v2);
+  CHECK(!equal(v, v2));
 
-    // "Ints" view vs. shuffled and sorted
-    sort(v2);
-    CHECK(is_sorted(v2));
-    CHECK(equal(v, v2));
+  // "Ints" view vs. shuffled and sorted
+  sort(v2);
+  CHECK(is_sorted(v2));
+  CHECK(equal(v, v2));
 
-    // Shuffled vs. shuffled
-    v |= action::shuffle(gen);
-    v2 = v2 | move | action::shuffle(gen);
-    CHECK(!is_sorted(v));
-    CHECK(!is_sorted(v2));
-    CHECK(size(v2) == size(v));
-    CHECK(!equal(v, v2));
+  // Shuffled vs. shuffled
+  v |= action::shuffle(gen);
+  v2 = v2 | move | action::shuffle(gen);
+  CHECK(!is_sorted(v));
+  CHECK(!is_sorted(v2));
+  CHECK(size(v2) == size(v));
+  CHECK(!equal(v, v2));
 
-    // Container algorithms can also be called directly
-    // in which case they take and return by reference
-    v = view::ints(0,100);
-    auto & v3 = action::shuffle(v, gen);
-    CHECK(!is_sorted(v));
-    CHECK(&v3 == &v);
+  // Container algorithms can also be called directly
+  // in which case they take and return by reference
+  v = view::ints(0,100);
+  auto & v3 = action::shuffle(v, gen);
+  CHECK(!is_sorted(v));
+  CHECK(&v3 == &v);
 
-    // Create and shuffle container reference
-    v = view::ints(0,100);
-    auto ref = std::ref(v);
-    ref |= action::shuffle(gen);
-    CHECK(!is_sorted(v));
+  // Create and shuffle container reference
+  v = view::ints(0,100);
+  auto ref = std::ref(v);
+  ref |= action::shuffle(gen);
+  CHECK(!is_sorted(v));
 
-    // Can pipe a view to a "container" algorithm.
-    v = view::ints(0,100);
-    v | view::stride(2) | action::shuffle(gen);
-    CHECK(!is_sorted(v));
+  // Can pipe a view to a "container" algorithm.
+  v = view::ints(0,100);
+  v | view::stride(2) | action::shuffle(gen);
+  CHECK(!is_sorted(v));
 
-    return ::test_result();
+  return ::test_result();
 }

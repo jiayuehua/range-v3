@@ -22,15 +22,15 @@
 /// which have a different type for begin and end.
 /// \ingroup range-core
 #define RANGES_FOR(VAR_DECL, ...)                                                               \
-    if(bool _range_v3_done = false) {}                                                          \
-    else for(auto && _range_v3_rng = (__VA_ARGS__); !_range_v3_done;)                           \
-        for(auto _range_v3_begin = ranges::begin(_range_v3_rng); !_range_v3_done;               \
-                _range_v3_done = true)                                                          \
-            for(auto _range_v3_end = ranges::end(_range_v3_rng);                                \
-                    !_range_v3_done && _range_v3_begin != _range_v3_end; ++_range_v3_begin)     \
-                if(!(_range_v3_done = true)) {}                                                 \
-                else for(VAR_DECL = *_range_v3_begin; _range_v3_done; _range_v3_done = false)   \
-    /**/
+  if(bool _range_v3_done = false) {}                                                          \
+  else for(auto && _range_v3_rng = (__VA_ARGS__); !_range_v3_done;)                           \
+    for(auto _range_v3_begin = ranges::begin(_range_v3_rng); !_range_v3_done;               \
+        _range_v3_done = true)                                                          \
+      for(auto _range_v3_end = ranges::end(_range_v3_rng);                                \
+          !_range_v3_done && _range_v3_begin != _range_v3_end; ++_range_v3_begin)     \
+        if(!(_range_v3_done = true)) {}                                                 \
+        else for(VAR_DECL = *_range_v3_begin; _range_v3_done; _range_v3_done = false)   \
+  /**/
 
 #else
 #define RANGES_FOR(VAR_DECL, ...) for(VAR_DECL : (__VA_ARGS__))

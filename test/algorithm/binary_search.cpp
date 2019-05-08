@@ -20,35 +20,35 @@
 
 int main()
 {
-    using ranges::begin;
-    using ranges::end;
-    using ranges::size;
-    using ranges::less;
+  using ranges::begin;
+  using ranges::end;
+  using ranges::size;
+  using ranges::less;
 
-    std::pair<int, int> a[] = {{0, 0}, {0, 1}, {1, 2}, {1, 3}, {3, 4}, {3, 5}};
-    const std::pair<int, int> c[] = {{0, 0}, {0, 1}, {1, 2}, {1, 3}, {3, 4}, {3, 5}};
+  std::pair<int, int> a[] = {{0, 0}, {0, 1}, {1, 2}, {1, 3}, {3, 4}, {3, 5}};
+  const std::pair<int, int> c[] = {{0, 0}, {0, 1}, {1, 2}, {1, 3}, {3, 4}, {3, 5}};
 
-    CHECK(ranges::binary_search(begin(a), end(a), a[0]));
-    CHECK(ranges::binary_search(begin(a), end(a), a[1], less()));
-    CHECK(ranges::binary_search(begin(a), end(a), 1, less(), &std::pair<int, int>::first));
+  CHECK(ranges::binary_search(begin(a), end(a), a[0]));
+  CHECK(ranges::binary_search(begin(a), end(a), a[1], less()));
+  CHECK(ranges::binary_search(begin(a), end(a), 1, less(), &std::pair<int, int>::first));
 
-    CHECK(ranges::binary_search(a, a[2]));
-    CHECK(ranges::binary_search(c, c[3]));
+  CHECK(ranges::binary_search(a, a[2]));
+  CHECK(ranges::binary_search(c, c[3]));
 
-    CHECK(ranges::binary_search(a, a[4], less()));
-    CHECK(ranges::binary_search(c, c[5], less()));
+  CHECK(ranges::binary_search(a, a[4], less()));
+  CHECK(ranges::binary_search(c, c[5], less()));
 
-    CHECK(ranges::binary_search(a, 1, less(), &std::pair<int, int>::first));
-    CHECK(ranges::binary_search(c, 1, less(), &std::pair<int, int>::first));
+  CHECK(ranges::binary_search(a, 1, less(), &std::pair<int, int>::first));
+  CHECK(ranges::binary_search(c, 1, less(), &std::pair<int, int>::first));
 
-    CHECK(ranges::binary_search(a, 0, less(), &std::pair<int, int>::first));
-    CHECK(ranges::binary_search(c, 0, less(), &std::pair<int, int>::first));
+  CHECK(ranges::binary_search(a, 0, less(), &std::pair<int, int>::first));
+  CHECK(ranges::binary_search(c, 0, less(), &std::pair<int, int>::first));
 
-    CHECK(!ranges::binary_search(a, -1, less(), &std::pair<int, int>::first));
-    CHECK(!ranges::binary_search(c, -1, less(), &std::pair<int, int>::first));
+  CHECK(!ranges::binary_search(a, -1, less(), &std::pair<int, int>::first));
+  CHECK(!ranges::binary_search(c, -1, less(), &std::pair<int, int>::first));
 
-    CHECK(!ranges::binary_search(a, 4, less(), &std::pair<int, int>::first));
-    CHECK(!ranges::binary_search(c, 4, less(), &std::pair<int, int>::first));
+  CHECK(!ranges::binary_search(a, 4, less(), &std::pair<int, int>::first));
+  CHECK(!ranges::binary_search(c, 4, less(), &std::pair<int, int>::first));
 
-    return test_result();
+  return test_result();
 }

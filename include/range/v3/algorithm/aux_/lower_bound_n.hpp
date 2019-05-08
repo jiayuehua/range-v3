@@ -22,51 +22,51 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \cond
+    namespace detail
     {
-        /// \cond
-        namespace detail
+      // [&](auto&& i){ return invoke(pred, i, val); }
+      template<typename Pred, typename Val>
+      struct lower_bound_predicate
+      {
+        Pred& pred_;
+        Val& val_;
+
+        template<typename T>
+        bool operator()(T&& t) const
         {
-            // [&](auto&& i){ return invoke(pred, i, val); }
-            template<typename Pred, typename Val>
-            struct lower_bound_predicate
-            {
-                Pred& pred_;
-                Val& val_;
-
-                template<typename T>
-                bool operator()(T&& t) const
-                {
-                    return invoke(pred_, static_cast<T&&>(t), val_);
-                }
-            };
-
-            template<typename Pred, typename Val>
-            lower_bound_predicate<Pred, Val>
-            make_lower_bound_predicate(Pred& pred, Val& val)
-            {
-                return {pred, val};
-            }
+          return invoke(pred_, static_cast<T&&>(t), val_);
         }
-        /// \endcond
+      };
 
-        namespace aux
+      template<typename Pred, typename Val>
+      lower_bound_predicate<Pred, Val>
+      make_lower_bound_predicate(Pred& pred, Val& val)
+      {
+        return {pred, val};
+      }
+    }
+    /// \endcond
+
+    namespace aux
+    {
+      struct lower_bound_n_fn
+      {
+        template<typename I, typename V2, typename C = ordered_less, typename P = ident,
+          CONCEPT_REQUIRES_(BinarySearchable<I, V2, C, P>())>
+        I operator()(I begin, difference_type_t<I> d, V2 const &val, C pred = C{},
+          P proj = P{}) const
         {
-            struct lower_bound_n_fn
-            {
-                template<typename I, typename V2, typename C = ordered_less, typename P = ident,
-                    CONCEPT_REQUIRES_(BinarySearchable<I, V2, C, P>())>
-                I operator()(I begin, difference_type_t<I> d, V2 const &val, C pred = C{},
-                    P proj = P{}) const
-                {
-                    return partition_point_n(std::move(begin), d,
-                        detail::make_lower_bound_predicate(pred, val), std::move(proj));
-                }
-            };
-
-            RANGES_INLINE_VARIABLE(lower_bound_n_fn, lower_bound_n)
+          return partition_point_n(std::move(begin), d,
+            detail::make_lower_bound_predicate(pred, val), std::move(proj));
         }
-    } // namespace v3
+      };
+
+      RANGES_INLINE_VARIABLE(lower_bound_n_fn, lower_bound_n)
+    }
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

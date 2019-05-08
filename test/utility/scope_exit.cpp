@@ -17,69 +17,69 @@ RANGES_DIAGNOSTIC_IGNORE_UNNEEDED_MEMBER
 
 namespace
 {
-    int i = 0;
+  int i = 0;
 
-    struct NoexceptFalse
+  struct NoexceptFalse
+  {
+    NoexceptFalse() {}
+    NoexceptFalse(NoexceptFalse const &) noexcept(false)
+    {}
+
+    NoexceptFalse(NoexceptFalse &&) noexcept(false)
     {
-        NoexceptFalse() {}
-        NoexceptFalse(NoexceptFalse const &) noexcept(false)
-        {}
+      CHECK(false);
+    }
 
-        NoexceptFalse(NoexceptFalse &&) noexcept(false)
-        {
-            CHECK(false);
-        }
-
-        void operator()() const
-        {
-            ++i;
-        }
-    };
-
-    struct ThrowingCopy
+    void operator()() const
     {
-        ThrowingCopy() {}
-        [[noreturn]] ThrowingCopy(ThrowingCopy const &) noexcept(false)
-        {
-            throw 42;
-        }
+      ++i;
+    }
+  };
 
-        ThrowingCopy(ThrowingCopy &&) noexcept(false)
-        {
-            CHECK(false);
-        }
+  struct ThrowingCopy
+  {
+    ThrowingCopy() {}
+    [[noreturn]] ThrowingCopy(ThrowingCopy const &) noexcept(false)
+    {
+      throw 42;
+    }
 
-        void operator()() const
-        {
-            ++i;
-        }
-    };
+    ThrowingCopy(ThrowingCopy &&) noexcept(false)
+    {
+      CHECK(false);
+    }
+
+    void operator()() const
+    {
+      ++i;
+    }
+  };
 }
 
 int main()
 {
-    std::cout << "\nTesting scope_exit\n";
+  std::cout << "\nTesting scope_exit\n";
 
-    {
-        auto guard = ranges::make_scope_exit([&]{++i;});
-        CHECK(i == 0);
-    }
+  {
+    auto guard = ranges::make_scope_exit([&]{++i;});
+    CHECK(i == 0);
+  }
+  CHECK(i == 1);
+
+  {
+    auto guard = ranges::make_scope_exit(NoexceptFalse{});
     CHECK(i == 1);
+  }
+  CHECK(i == 2);
 
-    {
-        auto guard = ranges::make_scope_exit(NoexceptFalse{});
-        CHECK(i == 1);
-    }
-    CHECK(i == 2);
+  try
+  {
+    auto guard = ranges::make_scope_exit(ThrowingCopy{});
+    CHECK(false);
+  }
+  catch(int)
+  {}
+  CHECK(i == 3);
 
-    try
-    {
-        auto guard = ranges::make_scope_exit(ThrowingCopy{});
-        CHECK(false);
-    }
-    catch(int)
-    {}
-    CHECK(i == 3);
-
-    return ::test_result();
+  return ::test_result();
 }

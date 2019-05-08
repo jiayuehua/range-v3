@@ -30,35 +30,35 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct copy_n_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct copy_n_fn
-        {
-            template<typename I, typename O, typename P = ident,
-                CONCEPT_REQUIRES_(
-                    InputIterator<I>() &&
-                    WeaklyIncrementable<O>() &&
-                    IndirectlyCopyable<I, O>()
-                )>
-            tagged_pair<tag::in(I), tag::out(O)>
-            operator()(I begin, difference_type_t<I> n, O out) const
-            {
-                RANGES_EXPECT(0 <= n);
-                auto norig = n;
-                auto b = uncounted(begin);
-                for(; n != 0; ++b, ++out, --n)
-                    *out = *b;
-                return {recounted(begin, b, norig), out};
-            }
-        };
+      template<typename I, typename O, typename P = ident,
+        CONCEPT_REQUIRES_(
+          InputIterator<I>() &&
+          WeaklyIncrementable<O>() &&
+          IndirectlyCopyable<I, O>()
+        )>
+      tagged_pair<tag::in(I), tag::out(O)>
+      operator()(I begin, difference_type_t<I> n, O out) const
+      {
+        RANGES_EXPECT(0 <= n);
+        auto norig = n;
+        auto b = uncounted(begin);
+        for(; n != 0; ++b, ++out, --n)
+          *out = *b;
+        return {recounted(begin, b, norig), out};
+      }
+    };
 
-        /// \sa `copy_n_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<copy_n_fn>, copy_n)
-        /// @}
-    } // namespace v3
+    /// \sa `copy_n_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<copy_n_fn>, copy_n)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

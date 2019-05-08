@@ -25,11 +25,11 @@ using std::cout;
 int
 main()
 {
-    cout << std::boolalpha;
-    std::vector<int> v{1, 2, 3, 4, 5, 6};
-    cout << "vector:   " << ranges::is_sorted(v) << '\n';
+  cout << std::boolalpha;
+  std::vector<int> v{1, 2, 3, 4, 5, 6};
+  cout << "vector:   " << ranges::is_sorted(v) << '\n';
 
-    std::array<int, 6> a{6, 2, 3, 4, 5, 6};
-    cout << "array:    " << ranges::is_sorted(a) << '\n';
+  std::array<int, 6> a{6, 2, 3, 4, 5, 6};
+  cout << "array:    " << ranges::is_sorted(a) << '\n';
 }
 ///[is_sorted]

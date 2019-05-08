@@ -35,31 +35,31 @@
 template<class Iter>
 struct iter_call
 {
-    using begin_t = Iter;
-    using sentinel_t = typename sentinel_type<Iter>::type;
+  using begin_t = Iter;
+  using sentinel_t = typename sentinel_type<Iter>::type;
 
-    template<class B, class E, class... Args>
-    auto operator()(B &&It, E &&e, Args &&... args) const
-     -> decltype(ranges::unique(begin_t{It}, sentinel_t{e}, std::forward<Args>(args)...))
-    {
-        return ranges::unique(begin_t{It}, sentinel_t{e}, std::forward<Args>(args)...);
-    }
+  template<class B, class E, class... Args>
+  auto operator()(B &&It, E &&e, Args &&... args) const
+   -> decltype(ranges::unique(begin_t{It}, sentinel_t{e}, std::forward<Args>(args)...))
+  {
+    return ranges::unique(begin_t{It}, sentinel_t{e}, std::forward<Args>(args)...);
+  }
 };
 
 /// Calls the range interface of the algorithm
 template<class Iter>
 struct range_call
 {
-    using begin_t = Iter;
-    using sentinel_t = typename sentinel_type<Iter>::type;
+  using begin_t = Iter;
+  using sentinel_t = typename sentinel_type<Iter>::type;
 
-    template<class B, class E, class... Args>
-    auto operator()(B &&It, E &&e, Args &&... args) const
-     -> ranges::iterator_t<decltype(ranges::make_iterator_range(begin_t{It}, sentinel_t{e}))>
-    {
-        auto rng = ranges::make_iterator_range(begin_t{It}, sentinel_t{e});
-        return ranges::unique(rng, std::forward<Args>(args)...);
-    }
+  template<class B, class E, class... Args>
+  auto operator()(B &&It, E &&e, Args &&... args) const
+   -> ranges::iterator_t<decltype(ranges::make_iterator_range(begin_t{It}, sentinel_t{e}))>
+  {
+    auto rng = ranges::make_iterator_range(begin_t{It}, sentinel_t{e});
+    return ranges::unique(rng, std::forward<Args>(args)...);
+  }
 };
 
 template<class T> using identity_t = T;
@@ -67,95 +67,95 @@ template<class T> using identity_t = T;
 template<class It, template<class> class FunT>
 void test()
 {
-    using Fun = FunT<It>;
+  using Fun = FunT<It>;
 
-    {
-        int a[] = {0};
-        const unsigned sa = sizeof(a) / sizeof(a[0]);
-        auto r = Fun{}(a, a + sa);
-        CHECK(r == It(a + sa));
-        CHECK(a[0] == 0);
-    }
-    {
-        int a[] = {0, 1};
-        const unsigned sa = sizeof(a) / sizeof(a[0]);
-        auto r = Fun{}(a, a + sa);
-        CHECK(r == It(a + sa));
-        CHECK(a[0] == 0);
-        CHECK(a[1] == 1);
-    }
-    {
-        int a[] = {0, 0};
-        const unsigned sa = sizeof(a) / sizeof(a[0]);
-        auto r = Fun{}(a, a + sa);
-        CHECK(r == It(a + 1));
-        CHECK(a[0] == 0);
-    }
-    {
-        int a[] = {0, 0, 1};
-        const unsigned sa = sizeof(a) / sizeof(a[0]);
-        auto r = Fun{}(a, a + sa);
-        CHECK(r == It(a + 2));
-        CHECK(a[0] == 0);
-        CHECK(a[1] == 1);
-    }
-    {
-        int a[] = {0, 0, 1, 0};
-        const unsigned sa = sizeof(a) / sizeof(a[0]);
-        auto r = Fun{}(a, a + sa);
-        CHECK(r == It(a + 3));
-        CHECK(a[0] == 0);
-        CHECK(a[1] == 1);
-        CHECK(a[2] == 0);
-    }
-    {
-        int a[] = {0, 0, 1, 1};
-        const unsigned sa = sizeof(a) / sizeof(a[0]);
-        auto r = Fun{}(a, a + sa);
-        CHECK(r == It(a + 2));
-        CHECK(a[0] == 0);
-        CHECK(a[1] == 1);
-    }
-    {
-        int a[] = {0, 1, 1};
-        const unsigned sa = sizeof(a) / sizeof(a[0]);
-        auto r = Fun{}(a, a + sa);
-        CHECK(r == It(a + 2));
-        CHECK(a[0] == 0);
-        CHECK(a[1] == 1);
-    }
-    {
-        int a[] = {0, 1, 1, 1, 2, 2, 2};
-        const unsigned sa = sizeof(a) / sizeof(a[0]);
-        auto r = Fun{}(a, a + sa);
-        CHECK(r == It(a + 3));
-        CHECK(a[0] == 0);
-        CHECK(a[1] == 1);
-        CHECK(a[2] == 2);
-    }
+  {
+    int a[] = {0};
+    const unsigned sa = sizeof(a) / sizeof(a[0]);
+    auto r = Fun{}(a, a + sa);
+    CHECK(r == It(a + sa));
+    CHECK(a[0] == 0);
+  }
+  {
+    int a[] = {0, 1};
+    const unsigned sa = sizeof(a) / sizeof(a[0]);
+    auto r = Fun{}(a, a + sa);
+    CHECK(r == It(a + sa));
+    CHECK(a[0] == 0);
+    CHECK(a[1] == 1);
+  }
+  {
+    int a[] = {0, 0};
+    const unsigned sa = sizeof(a) / sizeof(a[0]);
+    auto r = Fun{}(a, a + sa);
+    CHECK(r == It(a + 1));
+    CHECK(a[0] == 0);
+  }
+  {
+    int a[] = {0, 0, 1};
+    const unsigned sa = sizeof(a) / sizeof(a[0]);
+    auto r = Fun{}(a, a + sa);
+    CHECK(r == It(a + 2));
+    CHECK(a[0] == 0);
+    CHECK(a[1] == 1);
+  }
+  {
+    int a[] = {0, 0, 1, 0};
+    const unsigned sa = sizeof(a) / sizeof(a[0]);
+    auto r = Fun{}(a, a + sa);
+    CHECK(r == It(a + 3));
+    CHECK(a[0] == 0);
+    CHECK(a[1] == 1);
+    CHECK(a[2] == 0);
+  }
+  {
+    int a[] = {0, 0, 1, 1};
+    const unsigned sa = sizeof(a) / sizeof(a[0]);
+    auto r = Fun{}(a, a + sa);
+    CHECK(r == It(a + 2));
+    CHECK(a[0] == 0);
+    CHECK(a[1] == 1);
+  }
+  {
+    int a[] = {0, 1, 1};
+    const unsigned sa = sizeof(a) / sizeof(a[0]);
+    auto r = Fun{}(a, a + sa);
+    CHECK(r == It(a + 2));
+    CHECK(a[0] == 0);
+    CHECK(a[1] == 1);
+  }
+  {
+    int a[] = {0, 1, 1, 1, 2, 2, 2};
+    const unsigned sa = sizeof(a) / sizeof(a[0]);
+    auto r = Fun{}(a, a + sa);
+    CHECK(r == It(a + 3));
+    CHECK(a[0] == 0);
+    CHECK(a[1] == 1);
+    CHECK(a[2] == 2);
+  }
 }
 
 int main()
 {
-    test<forward_iterator<int*>, iter_call>();
-    test<bidirectional_iterator<int*>, iter_call>();
-    test<random_access_iterator<int*>, iter_call>();
-    test<int*, iter_call>();
+  test<forward_iterator<int*>, iter_call>();
+  test<bidirectional_iterator<int*>, iter_call>();
+  test<random_access_iterator<int*>, iter_call>();
+  test<int*, iter_call>();
 
-    test<forward_iterator<int*>, range_call>();
-    test<bidirectional_iterator<int*>, range_call>();
-    test<random_access_iterator<int*>, range_call>();
-    test<int*, range_call>();
+  test<forward_iterator<int*>, range_call>();
+  test<bidirectional_iterator<int*>, range_call>();
+  test<random_access_iterator<int*>, range_call>();
+  test<int*, range_call>();
 
-    // Test rvalue range
-    {
-        int a[] = {0, 1, 1, 1, 2, 2, 2};
-        auto r = ranges::unique(ranges::view::all(a));
-        CHECK(r.get_unsafe() == a + 3);
-        CHECK(a[0] == 0);
-        CHECK(a[1] == 1);
-        CHECK(a[2] == 2);
-    }
+  // Test rvalue range
+  {
+    int a[] = {0, 1, 1, 1, 2, 2, 2};
+    auto r = ranges::unique(ranges::view::all(a));
+    CHECK(r.get_unsafe() == a + 3);
+    CHECK(a[0] == 0);
+    CHECK(a[1] == 1);
+    CHECK(a[2] == 2);
+  }
 
-    return ::test_result();
+  return ::test_result();
 }

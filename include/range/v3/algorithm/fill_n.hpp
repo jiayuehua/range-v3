@@ -24,30 +24,30 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct fill_n_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct fill_n_fn
-        {
-            template<typename O, typename V,
-                CONCEPT_REQUIRES_(OutputIterator<O, V const &>())>
-            O operator()(O begin, difference_type_t<O> n, V const & val) const
-            {
-                RANGES_EXPECT(n >= 0);
-                auto norig = n;
-                auto b = uncounted(begin);
-                for(; n != 0; ++b, --n)
-                    *b = val;
-                return recounted(begin, b, norig);
-            }
-        };
+      template<typename O, typename V,
+        CONCEPT_REQUIRES_(OutputIterator<O, V const &>())>
+      O operator()(O begin, difference_type_t<O> n, V const & val) const
+      {
+        RANGES_EXPECT(n >= 0);
+        auto norig = n;
+        auto b = uncounted(begin);
+        for(; n != 0; ++b, --n)
+          *b = val;
+        return recounted(begin, b, norig);
+      }
+    };
 
-        /// \sa `fill_n_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(fill_n_fn, fill_n)
-        /// @}
-    } // namespace v3
+    /// \sa `fill_n_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(fill_n_fn, fill_n)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

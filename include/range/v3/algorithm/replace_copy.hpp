@@ -27,53 +27,53 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \ingroup group-concepts
+    template<typename I, typename O, typename T0, typename T1, typename P = ident>
+    using ReplaceCopyable = meta::strict_and<
+      InputIterator<I>,
+      OutputIterator<O, T1 const &>,
+      IndirectlyCopyable<I, O>,
+      IndirectRelation<equal_to, projected<I, P>, T0 const *>>;
+
+    /// \addtogroup group-algorithms
+    /// @{
+    struct replace_copy_fn
     {
-        /// \ingroup group-concepts
-        template<typename I, typename O, typename T0, typename T1, typename P = ident>
-        using ReplaceCopyable = meta::strict_and<
-            InputIterator<I>,
-            OutputIterator<O, T1 const &>,
-            IndirectlyCopyable<I, O>,
-            IndirectRelation<equal_to, projected<I, P>, T0 const *>>;
-
-        /// \addtogroup group-algorithms
-        /// @{
-        struct replace_copy_fn
+      template<typename I, typename S, typename O, typename T0, typename T1, typename P = ident,
+        CONCEPT_REQUIRES_(ReplaceCopyable<I, O, T0, T1, P>() && Sentinel<S, I>())>
+      tagged_pair<tag::in(I), tag::out(O)> operator()(I begin, S end, O out, T0 const & old_value, T1 const & new_value, P proj = {}) const
+      {
+        for(; begin != end; ++begin, ++out)
         {
-            template<typename I, typename S, typename O, typename T0, typename T1, typename P = ident,
-                CONCEPT_REQUIRES_(ReplaceCopyable<I, O, T0, T1, P>() && Sentinel<S, I>())>
-            tagged_pair<tag::in(I), tag::out(O)> operator()(I begin, S end, O out, T0 const & old_value, T1 const & new_value, P proj = {}) const
-            {
-                for(; begin != end; ++begin, ++out)
-                {
-                    auto &&x = *begin;
-                    if(invoke(proj, x) == old_value)
-                        *out = new_value;
-                    else
-                        *out = (decltype(x) &&) x;
-                }
-                return {begin, out};
-            }
+          auto &&x = *begin;
+          if(invoke(proj, x) == old_value)
+            *out = new_value;
+          else
+            *out = (decltype(x) &&) x;
+        }
+        return {begin, out};
+      }
 
-            template<typename Rng, typename O, typename T0, typename T1, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(ReplaceCopyable<I, O, T0, T1, P>() && Range<Rng>())>
-            tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)>
-            operator()(Rng &&rng, O out, T0 const & old_value, T1 const & new_value,
-                P proj = {}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(out), old_value, new_value,
-                    std::move(proj));
-            }
-        };
+      template<typename Rng, typename O, typename T0, typename T1, typename P = ident,
+        typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(ReplaceCopyable<I, O, T0, T1, P>() && Range<Rng>())>
+      tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)>
+      operator()(Rng &&rng, O out, T0 const & old_value, T1 const & new_value,
+        P proj = {}) const
+      {
+        return (*this)(begin(rng), end(rng), std::move(out), old_value, new_value,
+          std::move(proj));
+      }
+    };
 
-        /// \sa `replace_copy_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<replace_copy_fn>,
-                               replace_copy)
-        /// @}
-    } // namespace v3
+    /// \sa `replace_copy_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<replace_copy_fn>,
+                 replace_copy)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

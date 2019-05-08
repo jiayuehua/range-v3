@@ -25,40 +25,40 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct count_if_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct count_if_fn
-        {
-            template<typename I, typename S, typename R, typename P = ident,
-                CONCEPT_REQUIRES_(InputIterator<I>() && Sentinel<S, I>() &&
-                    IndirectPredicate<R, projected<I, P> >())>
-            difference_type_t<I>
-            operator()(I begin, S end, R pred, P proj = P{}) const
-            {
-                difference_type_t<I> n = 0;
-                for(; begin != end; ++begin)
-                    if(invoke(pred, invoke(proj, *begin)))
-                        ++n;
-                return n;
-            }
+      template<typename I, typename S, typename R, typename P = ident,
+        CONCEPT_REQUIRES_(InputIterator<I>() && Sentinel<S, I>() &&
+          IndirectPredicate<R, projected<I, P> >())>
+      difference_type_t<I>
+      operator()(I begin, S end, R pred, P proj = P{}) const
+      {
+        difference_type_t<I> n = 0;
+        for(; begin != end; ++begin)
+          if(invoke(pred, invoke(proj, *begin)))
+            ++n;
+        return n;
+      }
 
-            template<typename Rng, typename R, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(InputRange<Rng>() && IndirectPredicate<R, projected<I, P> >())>
-            difference_type_t<I>
-            operator()(Rng &&rng, R pred, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
-            }
-        };
+      template<typename Rng, typename R, typename P = ident,
+        typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(InputRange<Rng>() && IndirectPredicate<R, projected<I, P> >())>
+      difference_type_t<I>
+      operator()(Rng &&rng, R pred, P proj = P{}) const
+      {
+        return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
+      }
+    };
 
-        /// \sa `count_if_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<count_if_fn>, count_if)
-        /// @}
-    } // namespace v3
+    /// \sa `count_if_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<count_if_fn>, count_if)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

@@ -17,28 +17,28 @@
 
 int main()
 {
-    using namespace ranges;
-    using namespace std::placeholders;
+  using namespace ranges;
+  using namespace std::placeholders;
 
-    std::vector<int> v = view::ints(1,21);
-    auto & v2 = action::take_while(v, std::bind(std::less<int>(), _1, 18));
-    CHECK(&v2 == &v);
-    CHECK(v.size() == 17u);
-    CHECK(v.back() == 17);
+  std::vector<int> v = view::ints(1,21);
+  auto & v2 = action::take_while(v, std::bind(std::less<int>(), _1, 18));
+  CHECK(&v2 == &v);
+  CHECK(v.size() == 17u);
+  CHECK(v.back() == 17);
 
-    v = std::move(v) | action::take_while([](int i){return i < 15;});
-    CHECK(v.size() == 14u);
-    CHECK(v.back() == 14);
+  v = std::move(v) | action::take_while([](int i){return i < 15;});
+  CHECK(v.size() == 14u);
+  CHECK(v.back() == 14);
 
-    v |= action::take_while([](int i){return i < 12;});
-    CHECK(v.size() == 11u);
-    CHECK(v.back() == 11);
+  v |= action::take_while([](int i){return i < 12;});
+  CHECK(v.size() == 11u);
+  CHECK(v.back() == 11);
 
-    v |= action::take_while([](int){return true;});
-    CHECK(v.size() == 11u);
+  v |= action::take_while([](int){return true;});
+  CHECK(v.size() == 11u);
 
-    v |= action::take_while([](int){return false;});
-    CHECK(v.size() == 0u);
+  v |= action::take_while([](int){return false;});
+  CHECK(v.size() == 0u);
 
-    return ::test_result();
+  return ::test_result();
 }

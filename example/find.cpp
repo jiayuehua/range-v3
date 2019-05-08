@@ -35,84 +35,84 @@ auto is_six = [](int i) -> bool { return i == 6; };
 int
 main()
 {
-    cout << "vector:   ";
+  cout << "vector:   ";
 
-    std::vector<int> v{6, 2, 6, 4, 6, 1};
+  std::vector<int> v{6, 2, 6, 4, 6, 1};
+  {
+    auto i = ranges::find(v, 6); // 1 2 3 4 5 6
+    cout << "*i: " << *i << '\n';
+  }
+  {
+    auto i = ranges::find(v, 10); // 1 2 3 4 5 6
+    if(i == ranges::end(v))
     {
-        auto i = ranges::find(v, 6); // 1 2 3 4 5 6
-        cout << "*i: " << *i << '\n';
+      cout << "didn't find 10\n";
     }
+  }
+  {
+    auto i = ranges::find_if(v, is_six);
+    if(i != ranges::end(v))
     {
-        auto i = ranges::find(v, 10); // 1 2 3 4 5 6
-        if(i == ranges::end(v))
-        {
-            cout << "didn't find 10\n";
-        }
+      cout << "*i: " << *i << '\n';
     }
+  }
+  {
+    auto i = ranges::find_if_not(v, is_six);
+    if(i != ranges::end(v))
     {
-        auto i = ranges::find_if(v, is_six);
-        if(i != ranges::end(v))
-        {
-            cout << "*i: " << *i << '\n';
-        }
+      cout << "*i: " << *i << '\n';
     }
+  }
+  {
+    auto i = ranges::find(v, 6);
+    i++;
+    if(i != ranges::end(v))
     {
-        auto i = ranges::find_if_not(v, is_six);
-        if(i != ranges::end(v))
-        {
-            cout << "*i: " << *i << '\n';
-        }
+      cout << "*i after ++ (2 expected): " << *i;
     }
-    {
-        auto i = ranges::find(v, 6);
-        i++;
-        if(i != ranges::end(v))
-        {
-            cout << "*i after ++ (2 expected): " << *i;
-        }
-    }
+  }
 
-    cout << "\narray:    ";
+  cout << "\narray:    ";
 
-    std::array<int, 6> a{6, 2, 3, 4, 5, 1};
+  std::array<int, 6> a{6, 2, 3, 4, 5, 1};
+  {
+    auto i = ranges::find(a, 6);
+    if(i != ranges::end(a))
     {
-        auto i = ranges::find(a, 6);
-        if(i != ranges::end(a))
-        {
-            cout << "*i: " << *i;
-        }
+      cout << "*i: " << *i;
     }
-    cout << "\nlist:     ";
+  }
+  cout << "\nlist:     ";
 
-    std::list<int> li{6, 2, 3, 4, 5, 1};
+  std::list<int> li{6, 2, 3, 4, 5, 1};
+  {
+    auto i = ranges::find(li, 6);
+    if(i != ranges::end(li))
     {
-        auto i = ranges::find(li, 6);
-        if(i != ranges::end(li))
-        {
-            cout << "*i: " << *i;
-        }
+      cout << "*i: " << *i;
     }
+  }
 
-    cout << "\nfwd_list: ";
+  cout << "\nfwd_list: ";
 
-    std::forward_list<int> fl{6, 2, 3, 4, 5, 1};
+  std::forward_list<int> fl{6, 2, 3, 4, 5, 1};
+  {
+    auto i = ranges::find(fl, 4);
+    if(i != ranges::end(fl))
     {
-        auto i = ranges::find(fl, 4);
-        if(i != ranges::end(fl))
-        {
-            cout << "*i: " << *i;
-        }
+      cout << "*i: " << *i;
     }
-    cout << "\ndeque:    ";
+  }
+  cout << "\ndeque:    ";
 
-    std::deque<int> d{6, 2, 3, 4, 5, 1};
+  std::deque<int> d{6, 2, 3, 4, 5, 1};
+  {
+    auto i = ranges::find(d, 6);
+    if(i != ranges::end(d))
     {
-        auto i = ranges::find(d, 6);
-        if(i != ranges::end(d))
-        {
-            cout << "*i: " << *i;
-        }
+      cout << "*i: " << *i;
     }
-    cout << '\n';
+  }
+  cout << '\n';
 }
 ///[find]

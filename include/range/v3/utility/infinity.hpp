@@ -19,48 +19,48 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \cond
+    struct infinity
     {
-        /// \cond
-        struct infinity
-        {
-        };
+    };
 
-        constexpr bool operator==(infinity, infinity)
-        {
-            return true;
-        }
-        constexpr bool operator!=(infinity, infinity)
-        {
-            return false;
-        }
-
-        template<typename Integer,
-            CONCEPT_REQUIRES_(Integral<Integer>())>
-        constexpr bool operator==(Integer, infinity)
-        {
-            return false;
-        }
-        template<typename Integer,
-            CONCEPT_REQUIRES_(Integral<Integer>())>
-        constexpr bool operator==(infinity, Integer)
-        {
-            return false;
-        }
-        template<typename Integer,
-            CONCEPT_REQUIRES_(Integral<Integer>())>
-        constexpr bool operator!=(Integer, infinity)
-        {
-            return true;
-        }
-        template<typename Integer,
-            CONCEPT_REQUIRES_(Integral<Integer>())>
-        constexpr bool operator!=(infinity, Integer)
-        {
-            return true;
-        }
-        /// \endcond
+    constexpr bool operator==(infinity, infinity)
+    {
+      return true;
     }
+    constexpr bool operator!=(infinity, infinity)
+    {
+      return false;
+    }
+
+    template<typename Integer,
+      CONCEPT_REQUIRES_(Integral<Integer>())>
+    constexpr bool operator==(Integer, infinity)
+    {
+      return false;
+    }
+    template<typename Integer,
+      CONCEPT_REQUIRES_(Integral<Integer>())>
+    constexpr bool operator==(infinity, Integer)
+    {
+      return false;
+    }
+    template<typename Integer,
+      CONCEPT_REQUIRES_(Integral<Integer>())>
+    constexpr bool operator!=(Integer, infinity)
+    {
+      return true;
+    }
+    template<typename Integer,
+      CONCEPT_REQUIRES_(Integral<Integer>())>
+    constexpr bool operator!=(infinity, Integer)
+    {
+      return true;
+    }
+    /// \endcond
+  }
 }
 
 #endif

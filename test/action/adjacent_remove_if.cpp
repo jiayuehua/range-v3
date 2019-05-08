@@ -20,15 +20,15 @@
 
 int main()
 {
-    using namespace ranges;
+  using namespace ranges;
 
-    std::vector<int> v = view::ints(1, 21);
-    auto & v2 = action::adjacent_remove_if(v, [](int x, int y){ return (x + y) % 3 == 0; });
-    CHECK(std::addressof(v) == std::addressof(v2));
-    check_equal(v, {2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20});
+  std::vector<int> v = view::ints(1, 21);
+  auto & v2 = action::adjacent_remove_if(v, [](int x, int y){ return (x + y) % 3 == 0; });
+  CHECK(std::addressof(v) == std::addressof(v2));
+  check_equal(v, {2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20});
 
-    v |= action::adjacent_remove_if([](int x, int y){ return (y - x) == 2; });
-    check_equal(v, {2, 5, 8, 11, 14, 17, 20});
+  v |= action::adjacent_remove_if([](int x, int y){ return (y - x) == 2; });
+  check_equal(v, {2, 5, 8, 11, 14, 17, 20});
 
-    return ::test_result();
+  return ::test_result();
 }

@@ -20,48 +20,48 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-views
+    /// @{
+    template<typename I>
+    struct unbounded_view
+      : view_interface<unbounded_view<I>, infinite>
     {
-        /// \addtogroup group-views
-        /// @{
+    private:
+      I it_;
+    public:
+      constexpr explicit unbounded_view(I it)
+        : it_(detail::move(it))
+      {}
+      constexpr I begin() const
+      {
+        return it_;
+      }
+      constexpr unreachable end() const
+      {
+        return {};
+      }
+    };
+
+    namespace view
+    {
+      struct unbounded_fn
+      {
         template<typename I>
-        struct unbounded_view
-          : view_interface<unbounded_view<I>, infinite>
+        constexpr unbounded_view<I> operator()(I it) const
         {
-        private:
-            I it_;
-        public:
-            constexpr explicit unbounded_view(I it)
-              : it_(detail::move(it))
-            {}
-            constexpr I begin() const
-            {
-                return it_;
-            }
-            constexpr unreachable end() const
-            {
-                return {};
-            }
-        };
-
-        namespace view
-        {
-            struct unbounded_fn
-            {
-                template<typename I>
-                constexpr unbounded_view<I> operator()(I it) const
-                {
-                    CONCEPT_ASSERT(InputIterator<I>());
-                    return unbounded_view<I>{detail::move(it)};
-                }
-            };
-
-            /// \relates unbounded_fn
-            /// \ingroup group-views
-            RANGES_INLINE_VARIABLE(unbounded_fn, unbounded)
+          CONCEPT_ASSERT(InputIterator<I>());
+          return unbounded_view<I>{detail::move(it)};
         }
-        /// @}
+      };
+
+      /// \relates unbounded_fn
+      /// \ingroup group-views
+      RANGES_INLINE_VARIABLE(unbounded_fn, unbounded)
     }
+    /// @}
+  }
 }
 
 RANGES_SATISFY_BOOST_RANGE(::ranges::v3::unbounded_view)

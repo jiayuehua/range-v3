@@ -26,59 +26,59 @@ using std::begin;
 template<class RangeT>
 void test_enumerate_with(RangeT &&range)
 {
-    auto enumerated_range = ranges::view::enumerate(range);
+  auto enumerated_range = ranges::view::enumerate(range);
 
-    int idx_ref = 0;
-    auto it_ref = begin( range );
+  int idx_ref = 0;
+  auto it_ref = begin( range );
 
-    for(auto it = enumerated_range.begin(); it != enumerated_range.end(); ++it)
-    {
-        const auto idx = std::get<0>(*it);
-        const auto value = std::get<1>(*it);
+  for(auto it = enumerated_range.begin(); it != enumerated_range.end(); ++it)
+  {
+    const auto idx = std::get<0>(*it);
+    const auto value = std::get<1>(*it);
 
-        CHECK(idx == idx_ref++);
-        CHECK(value == *it_ref++);
-    }
+    CHECK(idx == idx_ref++);
+    CHECK(value == *it_ref++);
+  }
 }
 
 int main()
 {
-    { // test array
-        int const es[] = { 9,8,7,6,5,4,3,2,1,0 };
-        test_enumerate_with(es);
-    }
+  { // test array
+    int const es[] = { 9,8,7,6,5,4,3,2,1,0 };
+    test_enumerate_with(es);
+  }
 
-    { // test with vector of complex value type
-        std::vector<std::list<int>> range{ {1, 2, 3}, { 3,5,6,7 }, { 10,5,6,1 }, { 1,2,3,4 } };
-        const auto rcopy = range;
+  { // test with vector of complex value type
+    std::vector<std::list<int>> range{ {1, 2, 3}, { 3,5,6,7 }, { 10,5,6,1 }, { 1,2,3,4 } };
+    const auto rcopy = range;
 
-        test_enumerate_with(range);
+    test_enumerate_with(range);
 
-        // check that range hasn't accidentially been modified
-        CHECK(rcopy == range);
+    // check that range hasn't accidentially been modified
+    CHECK(rcopy == range);
 
-        // check with empty range
-        range.clear();
-        test_enumerate_with(range);
-    }
+    // check with empty range
+    range.clear();
+    test_enumerate_with(range);
+  }
 
-    { // test with list
-        std::list<int> range{ 9,8,7,6,5,4,3,2,1 };
-        test_enumerate_with(range);
+  { // test with list
+    std::list<int> range{ 9,8,7,6,5,4,3,2,1 };
+    test_enumerate_with(range);
 
-        range.clear();
-        test_enumerate_with(range);
-    }
+    range.clear();
+    test_enumerate_with(range);
+  }
 
-    { // test with initializer_list
-        test_enumerate_with(std::initializer_list<int>{9, 8, 7, 6, 5, 4, 3, 2, 1});
-    }
+  { // test with initializer_list
+    test_enumerate_with(std::initializer_list<int>{9, 8, 7, 6, 5, 4, 3, 2, 1});
+  }
 
-    {
-        auto range = ranges::view::iota(0, 0);
-        test_enumerate_with(range);
+  {
+    auto range = ranges::view::iota(0, 0);
+    test_enumerate_with(range);
 
-        range = ranges::view::iota(-10000,10000);
-        test_enumerate_with(range);
-    }
+    range = ranges::view::iota(-10000,10000);
+    test_enumerate_with(range);
+  }
 }

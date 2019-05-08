@@ -22,60 +22,60 @@
 
 struct moveonly
 {
-    moveonly(moveonly&&) = default;
-    moveonly& operator=(moveonly&&) = default;
+  moveonly(moveonly&&) = default;
+  moveonly& operator=(moveonly&&) = default;
 };
 
 struct nonmovable
 {
-    nonmovable(nonmovable const &) = delete;
-    nonmovable& operator=(nonmovable const &) = delete;
+  nonmovable(nonmovable const &) = delete;
+  nonmovable& operator=(nonmovable const &) = delete;
 };
 
 struct nondefaultconstructible
 {
-    nondefaultconstructible(int) {}
+  nondefaultconstructible(int) {}
 };
 
 struct NotDestructible
 {
-    ~NotDestructible() = delete;
+  ~NotDestructible() = delete;
 };
 
 struct IntComparable
 {
-    operator int() const;
+  operator int() const;
 
-    friend bool operator==(IntComparable, IntComparable);
-    friend bool operator!=(IntComparable, IntComparable);
+  friend bool operator==(IntComparable, IntComparable);
+  friend bool operator!=(IntComparable, IntComparable);
 
-    friend bool operator<(IntComparable, IntComparable);
-    friend bool operator>(IntComparable, IntComparable);
-    friend bool operator<=(IntComparable, IntComparable);
-    friend bool operator>=(IntComparable, IntComparable);
+  friend bool operator<(IntComparable, IntComparable);
+  friend bool operator>(IntComparable, IntComparable);
+  friend bool operator<=(IntComparable, IntComparable);
+  friend bool operator>=(IntComparable, IntComparable);
 
-    friend bool operator==(int, IntComparable);
-    friend bool operator!=(int, IntComparable);
-    friend bool operator==(IntComparable, int);
-    friend bool operator!=(IntComparable, int);
+  friend bool operator==(int, IntComparable);
+  friend bool operator!=(int, IntComparable);
+  friend bool operator==(IntComparable, int);
+  friend bool operator!=(IntComparable, int);
 
-    friend bool operator<(int, IntComparable);
-    friend bool operator<(IntComparable, int);
-    friend bool operator>(int, IntComparable);
-    friend bool operator>(IntComparable, int);
-    friend bool operator<=(int, IntComparable);
-    friend bool operator<=(IntComparable, int);
-    friend bool operator>=(int, IntComparable);
-    friend bool operator>=(IntComparable, int);
+  friend bool operator<(int, IntComparable);
+  friend bool operator<(IntComparable, int);
+  friend bool operator>(int, IntComparable);
+  friend bool operator>(IntComparable, int);
+  friend bool operator<=(int, IntComparable);
+  friend bool operator<=(IntComparable, int);
+  friend bool operator>=(int, IntComparable);
+  friend bool operator>=(IntComparable, int);
 };
 
 struct IntSwappable
 {
-    operator int() const;
+  operator int() const;
 
-    friend void swap(int &, IntSwappable);
-    friend void swap(IntSwappable, int &);
-    friend void swap(IntSwappable, IntSwappable);
+  friend void swap(int &, IntSwappable);
+  friend void swap(IntSwappable, int &);
+  friend void swap(IntSwappable, IntSwappable);
 };
 
 static_assert(ranges::Destructible<int>(), "");
@@ -142,9 +142,9 @@ static_assert(ranges::Constructible<const int&&, const int&&>(), "");
 
 struct XXX
 {
-    XXX() = default;
-    XXX(XXX&&) = delete;
-    explicit XXX(int) {}
+  XXX() = default;
+  XXX(XXX&&) = delete;
+  explicit XXX(int) {}
 };
 
 static_assert(ranges::Constructible<XXX, int>(), "");
@@ -243,36 +243,36 @@ static_assert(ranges::EqualityComparable<int, IntComparable>(), "");
 static_assert(ranges::EqualityComparable<int &, IntComparable &>(), "");
 
 static_assert(
-    std::is_same<
-        ranges::bounded_range_concept_t<std::vector<int>>,
-        ranges::concepts::BoundedRange
-    >::value, "");
+  std::is_same<
+    ranges::bounded_range_concept_t<std::vector<int>>,
+    ranges::concepts::BoundedRange
+  >::value, "");
 
 static_assert(
-    std::is_same<
-        ranges::sized_range_concept_t<std::vector<int>>,
-        ranges::concepts::SizedRange
-    >::value, "");
+  std::is_same<
+    ranges::sized_range_concept_t<std::vector<int>>,
+    ranges::concepts::SizedRange
+  >::value, "");
 
 static_assert(
-    std::is_same<
-        ranges::bounded_view_concept_t<ranges::istream_range<int>>,
-        ranges::concepts::View
-    >::value, "");
+  std::is_same<
+    ranges::bounded_view_concept_t<ranges::istream_range<int>>,
+    ranges::concepts::View
+  >::value, "");
 
 static_assert(
-    std::is_same<
-        ranges::sized_view_concept_t<ranges::istream_range<int>>,
-        ranges::concepts::View
-    >::value, "");
+  std::is_same<
+    ranges::sized_view_concept_t<ranges::istream_range<int>>,
+    ranges::concepts::View
+  >::value, "");
 
 struct myview {
-    const char *begin();
-    const char *end();
+  const char *begin();
+  const char *end();
 };
 CONCEPT_ASSERT(ranges::View<myview>());
 
 int main()
 {
-    return test_result();
+  return test_result();
 }

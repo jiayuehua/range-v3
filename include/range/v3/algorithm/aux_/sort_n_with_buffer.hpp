@@ -39,34 +39,34 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    namespace aux
     {
-        namespace aux
+      struct sort_n_with_buffer_fn
+      {
+        template<typename I, typename B, typename C = ordered_less, typename P = ident,
+          typename VI = iter_common_reference_t<I>,
+          typename VB = iter_common_reference_t<B>,
+          CONCEPT_REQUIRES_(
+            Same<VI, VB>() &&
+            IndirectlyCopyable<I, B>() &&
+            Mergeable<B, I, I, C, P, P>()
+          )>
+        I operator()(I begin, difference_type_t<I> n, B buff, C r = C{}, P p = P{}) const
         {
-            struct sort_n_with_buffer_fn
-            {
-                template<typename I, typename B, typename C = ordered_less, typename P = ident,
-                    typename VI = iter_common_reference_t<I>,
-                    typename VB = iter_common_reference_t<B>,
-                    CONCEPT_REQUIRES_(
-                        Same<VI, VB>() &&
-                        IndirectlyCopyable<I, B>() &&
-                        Mergeable<B, I, I, C, P, P>()
-                    )>
-                I operator()(I begin, difference_type_t<I> n, B buff, C r = C{}, P p = P{}) const
-                {
-                    auto half = n / 2;
-                    if(0 == half)
-                        return next(begin, n);
-                    I m = (*this)(begin, half, buff, r, p);
-                          (*this)(m, n - half, buff, r, p);
-                    return merge_n_with_buffer(begin, half, m, n - half, buff, r, p);
-                }
-            };
+          auto half = n / 2;
+          if(0 == half)
+            return next(begin, n);
+          I m = (*this)(begin, half, buff, r, p);
+              (*this)(m, n - half, buff, r, p);
+          return merge_n_with_buffer(begin, half, m, n - half, buff, r, p);
+        }
+      };
 
-            RANGES_INLINE_VARIABLE(sort_n_with_buffer_fn, sort_n_with_buffer)
-        } // namespace aux
-    } // namespace v3
+      RANGES_INLINE_VARIABLE(sort_n_with_buffer_fn, sort_n_with_buffer)
+    } // namespace aux
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

@@ -17,25 +17,25 @@ using namespace ranges;
 // #https://github.com/ericniebler/range-v3/issues/1093
 void test_1093()
 {
-    struct Op {};
-    struct Op2 {};
+  struct Op {};
+  struct Op2 {};
 
-    struct payload { void* v; };
-    struct base_adaptor {};
+  struct payload { void* v; };
+  struct base_adaptor {};
 
-    struct RANGES_EMPTY_BASES A : base_adaptor, private box<Op, A> {};
-    struct RANGES_EMPTY_BASES B : base_adaptor, private box<Op2, B> {};
+  struct RANGES_EMPTY_BASES A : base_adaptor, private box<Op, A> {};
+  struct RANGES_EMPTY_BASES B : base_adaptor, private box<Op2, B> {};
 
-    using P  = compressed_pair<A, payload>;
-    using P2 = compressed_pair<B, P>;
+  using P  = compressed_pair<A, payload>;
+  using P2 = compressed_pair<B, P>;
 
-    CHECK(sizeof(P) == sizeof(payload));
-    CHECK(sizeof(P2) == sizeof(P));
+  CHECK(sizeof(P) == sizeof(payload));
+  CHECK(sizeof(P2) == sizeof(P));
 }
 
 int main()
 {
-    test_1093();
+  test_1093();
 
-    return ::test_result();
+  return ::test_result();
 }

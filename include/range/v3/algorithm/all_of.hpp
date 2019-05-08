@@ -25,40 +25,40 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct all_of_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct all_of_fn
-        {
-            template<typename I, typename S, typename F, typename P = ident,
-                CONCEPT_REQUIRES_(InputIterator<I>() && Sentinel<S, I>() &&
-                    IndirectPredicate<F, projected<I, P> >())>
-            bool
-            operator()(I first, S last, F pred, P proj = P{}) const
-            {
-                for(; first != last; ++first)
-                    if(!invoke(pred, invoke(proj, *first)))
-                        break;
-                return first == last;
-            }
+      template<typename I, typename S, typename F, typename P = ident,
+        CONCEPT_REQUIRES_(InputIterator<I>() && Sentinel<S, I>() &&
+          IndirectPredicate<F, projected<I, P> >())>
+      bool
+      operator()(I first, S last, F pred, P proj = P{}) const
+      {
+        for(; first != last; ++first)
+          if(!invoke(pred, invoke(proj, *first)))
+            break;
+        return first == last;
+      }
 
-            template<typename Rng, typename F, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(InputRange<Rng>() && IndirectPredicate<F, projected<I, P> >())>
-            bool
-            operator()(Rng &&rng, F pred, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
-            }
-        };
+      template<typename Rng, typename F, typename P = ident,
+        typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(InputRange<Rng>() && IndirectPredicate<F, projected<I, P> >())>
+      bool
+      operator()(Rng &&rng, F pred, P proj = P{}) const
+      {
+        return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
+      }
+    };
 
-        /// \sa `all_of_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<all_of_fn>, all_of)
-        /// @}
+    /// \sa `all_of_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<all_of_fn>, all_of)
+    /// @}
 
-    } // inline namespace v3
+  } // inline namespace v3
 } // namespace ranges
 
 #endif // include guard

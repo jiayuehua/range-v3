@@ -19,21 +19,21 @@ using namespace ranges;
 
 int main()
 {
-    const char* text =
+  const char* text =
 R"(Now is
 the time
 for all
 good men
 )";
 
-    std::stringstream sin{text};
-    auto rng = getlines(sin);
-    ::check_equal(rng, {"Now is", "the time", "for all", "good men"});
+  std::stringstream sin{text};
+  auto rng = getlines(sin);
+  ::check_equal(rng, {"Now is", "the time", "for all", "good men"});
 
-    using Rng = decltype(rng);
-    CONCEPT_ASSERT(InputView<Rng>());
-    CONCEPT_ASSERT(!ForwardView<Rng>());
-    CONCEPT_ASSERT(Same<range_rvalue_reference_t<Rng>, std::string &&>());
+  using Rng = decltype(rng);
+  CONCEPT_ASSERT(InputView<Rng>());
+  CONCEPT_ASSERT(!ForwardView<Rng>());
+  CONCEPT_ASSERT(Same<range_rvalue_reference_t<Rng>, std::string &&>());
 
-    return ::test_result();
+  return ::test_result();
 }

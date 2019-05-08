@@ -19,114 +19,114 @@
 
 int main()
 {
+  {
+    std::vector<int> vi{1,2,3,4};
+    CHECK(ranges::index(vi, 0) == 1);
+    CHECK(ranges::index(vi, 1) == 2);
+    CHECK(ranges::index(vi, 2) == 3);
+    CHECK(ranges::index(vi, 3) == 4);
+
+    CHECK(ranges::at(vi, 0) == 1);
+    CHECK(ranges::at(vi, 1) == 2);
+    CHECK(ranges::at(vi, 2) == 3);
+    CHECK(ranges::at(vi, 3) == 4);
+
+    try
     {
-        std::vector<int> vi{1,2,3,4};
-        CHECK(ranges::index(vi, 0) == 1);
-        CHECK(ranges::index(vi, 1) == 2);
-        CHECK(ranges::index(vi, 2) == 3);
-        CHECK(ranges::index(vi, 3) == 4);
-
-        CHECK(ranges::at(vi, 0) == 1);
-        CHECK(ranges::at(vi, 1) == 2);
-        CHECK(ranges::at(vi, 2) == 3);
-        CHECK(ranges::at(vi, 3) == 4);
-
-        try
-        {
-            ranges::at(vi, 4);
-            CHECK(false);
-        }
-        catch(std::out_of_range const& e)
-        {
-            CHECK(ranges::equal(ranges::view::c_str(e.what()),
-                                ranges::view::c_str("ranges::at")));
-        }
-
-        try
-        {
-            ranges::at(vi, -1);
-            CHECK(false);
-        }
-        catch(std::out_of_range const& e)
-        {
-            CHECK(ranges::equal(ranges::view::c_str(e.what()),
-                                ranges::view::c_str("ranges::at")));
-        }
-
-        auto viv = ranges::make_iterator_range(vi.begin(), vi.end());
-        CHECK(viv.at(0) == 1);
-        CHECK(viv.at(1) == 2);
-        CHECK(viv.at(2) == 3);
-        CHECK(viv.at(3) == 4);
-
-        try
-        {
-            viv.at(4);
-            CHECK(false);
-        }
-        catch(std::out_of_range const& e)
-        {
-            CHECK(ranges::equal(ranges::view::c_str(e.what()),
-                                ranges::view::c_str("view_interface::at")));
-        }
-
-        try
-        {
-            viv.at(-1);
-            CHECK(false);
-        }
-        catch(std::out_of_range const& e)
-        {
-            CHECK(ranges::equal(ranges::view::c_str(e.what()),
-                                ranges::view::c_str("view_interface::at")));
-        }
-
-        const auto cviv = viv;
-        CHECK(cviv.at(0) == 1);
-        CHECK(cviv.at(1) == 2);
-        CHECK(cviv.at(2) == 3);
-        CHECK(cviv.at(3) == 4);
-
-        try
-        {
-            cviv.at(4);
-            CHECK(false);
-        }
-        catch(std::out_of_range const& e)
-        {
-            CHECK(ranges::equal(ranges::view::c_str(e.what()),
-                                ranges::view::c_str("view_interface::at")));
-        }
-
-        try
-        {
-            cviv.at(-1);
-            CHECK(false);
-        }
-        catch(std::out_of_range const& e)
-        {
-            CHECK(ranges::equal(ranges::view::c_str(e.what()),
-                                ranges::view::c_str("view_interface::at")));
-        }
+      ranges::at(vi, 4);
+      CHECK(false);
+    }
+    catch(std::out_of_range const& e)
+    {
+      CHECK(ranges::equal(ranges::view::c_str(e.what()),
+                ranges::view::c_str("ranges::at")));
     }
 
+    try
     {
-        auto rng = ranges::view::ints(std::int64_t{0}, std::numeric_limits<std::int64_t>::max());
-        CHECK(ranges::index(rng, std::numeric_limits<std::int64_t>::max() - 1) ==
-              std::numeric_limits<std::int64_t>::max() - 1);
-        CHECK(ranges::at(rng, std::numeric_limits<std::int64_t>::max() - 1) ==
-              std::numeric_limits<std::int64_t>::max() - 1);
+      ranges::at(vi, -1);
+      CHECK(false);
+    }
+    catch(std::out_of_range const& e)
+    {
+      CHECK(ranges::equal(ranges::view::c_str(e.what()),
+                ranges::view::c_str("ranges::at")));
     }
 
-    #if RANGES_CXX_CONSTEXPR >= RANGES_CXX_CONSTEXPR_14
-    {
-        constexpr int vi[4] = {1, 2, 3, 4};
-        constexpr int vi0 = ranges::index(vi, 0);
-        static_assert(vi0 == 1, "");
-        constexpr int vi1 = ranges::at(vi, 1);
-        static_assert(vi1 == 2, "");
-    }
-    #endif
+    auto viv = ranges::make_iterator_range(vi.begin(), vi.end());
+    CHECK(viv.at(0) == 1);
+    CHECK(viv.at(1) == 2);
+    CHECK(viv.at(2) == 3);
+    CHECK(viv.at(3) == 4);
 
-    return ::test_result();
+    try
+    {
+      viv.at(4);
+      CHECK(false);
+    }
+    catch(std::out_of_range const& e)
+    {
+      CHECK(ranges::equal(ranges::view::c_str(e.what()),
+                ranges::view::c_str("view_interface::at")));
+    }
+
+    try
+    {
+      viv.at(-1);
+      CHECK(false);
+    }
+    catch(std::out_of_range const& e)
+    {
+      CHECK(ranges::equal(ranges::view::c_str(e.what()),
+                ranges::view::c_str("view_interface::at")));
+    }
+
+    const auto cviv = viv;
+    CHECK(cviv.at(0) == 1);
+    CHECK(cviv.at(1) == 2);
+    CHECK(cviv.at(2) == 3);
+    CHECK(cviv.at(3) == 4);
+
+    try
+    {
+      cviv.at(4);
+      CHECK(false);
+    }
+    catch(std::out_of_range const& e)
+    {
+      CHECK(ranges::equal(ranges::view::c_str(e.what()),
+                ranges::view::c_str("view_interface::at")));
+    }
+
+    try
+    {
+      cviv.at(-1);
+      CHECK(false);
+    }
+    catch(std::out_of_range const& e)
+    {
+      CHECK(ranges::equal(ranges::view::c_str(e.what()),
+                ranges::view::c_str("view_interface::at")));
+    }
+  }
+
+  {
+    auto rng = ranges::view::ints(std::int64_t{0}, std::numeric_limits<std::int64_t>::max());
+    CHECK(ranges::index(rng, std::numeric_limits<std::int64_t>::max() - 1) ==
+        std::numeric_limits<std::int64_t>::max() - 1);
+    CHECK(ranges::at(rng, std::numeric_limits<std::int64_t>::max() - 1) ==
+        std::numeric_limits<std::int64_t>::max() - 1);
+  }
+
+  #if RANGES_CXX_CONSTEXPR >= RANGES_CXX_CONSTEXPR_14
+  {
+    constexpr int vi[4] = {1, 2, 3, 4};
+    constexpr int vi0 = ranges::index(vi, 0);
+    static_assert(vi0 == 1, "");
+    constexpr int vi1 = ranges::at(vi, 1);
+    static_assert(vi1 == 2, "");
+  }
+  #endif
+
+  return ::test_result();
 }

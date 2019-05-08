@@ -21,32 +21,32 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-views
+    /// @{
+    namespace view
     {
-        /// \addtogroup group-views
-        /// @{
-        namespace view
-        {
-            /// Lazily pairs each element in a source range with
-            /// its corresponding index.
-            struct enumerate_fn
-            {
-                template<typename Rng,
-                    CONCEPT_REQUIRES_(ViewableRange<Rng>())>
-                auto operator()(Rng &&rng) const
-                RANGES_DECLTYPE_AUTO_RETURN
-                (
-                    zip(iota(range_difference_type_t<Rng>{}),
-                        all(static_cast<Rng &&>(rng)))
-                )
-            };
+      /// Lazily pairs each element in a source range with
+      /// its corresponding index.
+      struct enumerate_fn
+      {
+        template<typename Rng,
+          CONCEPT_REQUIRES_(ViewableRange<Rng>())>
+        auto operator()(Rng &&rng) const
+        RANGES_DECLTYPE_AUTO_RETURN
+        (
+          zip(iota(range_difference_type_t<Rng>{}),
+            all(static_cast<Rng &&>(rng)))
+        )
+      };
 
-            /// \relates enumerate_fn
-            /// \ingroup group-views
-            RANGES_INLINE_VARIABLE(view<enumerate_fn>, enumerate)
-        } // namespace view
-        /// @}
-    } // namespace v3
+      /// \relates enumerate_fn
+      /// \ingroup group-views
+      RANGES_INLINE_VARIABLE(view<enumerate_fn>, enumerate)
+    } // namespace view
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif

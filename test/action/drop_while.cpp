@@ -17,25 +17,25 @@
 
 int main()
 {
-    using namespace ranges;
-    using namespace std::placeholders;
+  using namespace ranges;
+  using namespace std::placeholders;
 
-    std::vector<int> v = view::ints(1,21);
-    auto & v2 = action::drop_while(v, std::bind(std::less<int>(), _1, 4));
-    CHECK(&v2 == &v);
-    CHECK(v.size() == 17u);
-    CHECK(v[0] == 4);
+  std::vector<int> v = view::ints(1,21);
+  auto & v2 = action::drop_while(v, std::bind(std::less<int>(), _1, 4));
+  CHECK(&v2 == &v);
+  CHECK(v.size() == 17u);
+  CHECK(v[0] == 4);
 
-    v = std::move(v) | action::drop_while([](int i){return i < 7;});
-    CHECK(v.size() == 14u);
-    CHECK(v[0] == 7);
+  v = std::move(v) | action::drop_while([](int i){return i < 7;});
+  CHECK(v.size() == 14u);
+  CHECK(v[0] == 7);
 
-    v |= action::drop_while([](int i){return i < 10;});
-    CHECK(v.size() == 11u);
-    CHECK(v[0] == 10);
+  v |= action::drop_while([](int i){return i < 10;});
+  CHECK(v.size() == 11u);
+  CHECK(v[0] == 10);
 
-    v |= action::drop_while([](int){return true;});
-    CHECK(v.size() == 0u);
+  v |= action::drop_while([](int){return true;});
+  CHECK(v.size() == 0u);
 
-    return ::test_result();
+  return ::test_result();
 }

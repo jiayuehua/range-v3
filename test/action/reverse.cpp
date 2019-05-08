@@ -22,15 +22,15 @@ using namespace ranges;
 
 int main()
 {
-    // [1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,...]
-    std::vector<int> v =
-        view::for_each(view::ints(1,6), [](int i){
-            return yield_from(view::repeat_n(i,i));
-        });
-    check_equal(v, {1,2,2,3,3,3,4,4,4,4,5,5,5,5,5});
+  // [1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,...]
+  std::vector<int> v =
+    view::for_each(view::ints(1,6), [](int i){
+      return yield_from(view::repeat_n(i,i));
+    });
+  check_equal(v, {1,2,2,3,3,3,4,4,4,4,5,5,5,5,5});
 
-    v |= action::unique | action::reverse;
-    CHECK(equal(v, {5,4,3,2,1}));
+  v |= action::unique | action::reverse;
+  CHECK(equal(v, {5,4,3,2,1}));
 
-    return ::test_result();
+  return ::test_result();
 }

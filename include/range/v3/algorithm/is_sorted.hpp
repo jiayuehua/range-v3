@@ -22,47 +22,47 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct is_sorted_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct is_sorted_fn
-        {
-            /// \brief template function \c is_sorted_fn::operator()
-            ///
-            /// range-based version of the \c is_sorted std algorithm
-            ///
-            /// Works on ForwardRanges
-            ///
-            /// \pre `Rng` is a model of the `ForwardRange` concept
-            /// \pre `I` is a model of the `ForwardIterator` concept
-            /// \pre `S` and `I` model the `Sentinel<S, I>` concept
-            /// \pre `R` and `projected<I, P>` model the `IndirectRelation<R, projected<I, P>>` concept
-            ///
-            template<typename I, typename S, typename R = ordered_less, typename P = ident,
-                CONCEPT_REQUIRES_(ForwardIterator<I>() && Sentinel<S, I>() &&
-                       IndirectRelation<R, projected<I, P>>())>
-            bool operator()(I begin, S end, R rel = R{}, P proj = P{}) const
-            {
-                return is_sorted_until(std::move(begin), end, std::move(rel),
-                                       std::move(proj)) == end;
-            }
+      /// \brief template function \c is_sorted_fn::operator()
+      ///
+      /// range-based version of the \c is_sorted std algorithm
+      ///
+      /// Works on ForwardRanges
+      ///
+      /// \pre `Rng` is a model of the `ForwardRange` concept
+      /// \pre `I` is a model of the `ForwardIterator` concept
+      /// \pre `S` and `I` model the `Sentinel<S, I>` concept
+      /// \pre `R` and `projected<I, P>` model the `IndirectRelation<R, projected<I, P>>` concept
+      ///
+      template<typename I, typename S, typename R = ordered_less, typename P = ident,
+        CONCEPT_REQUIRES_(ForwardIterator<I>() && Sentinel<S, I>() &&
+             IndirectRelation<R, projected<I, P>>())>
+      bool operator()(I begin, S end, R rel = R{}, P proj = P{}) const
+      {
+        return is_sorted_until(std::move(begin), end, std::move(rel),
+                     std::move(proj)) == end;
+      }
 
-            template<typename Rng, typename R = ordered_less, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(ForwardRange<Rng>() &&
-                    IndirectRelation<R, projected<I, P>>())>
-            bool operator()(Rng &&rng, R rel = R{}, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(rel), std::move(proj));
-            }
-        };
+      template<typename Rng, typename R = ordered_less, typename P = ident,
+        typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(ForwardRange<Rng>() &&
+          IndirectRelation<R, projected<I, P>>())>
+      bool operator()(Rng &&rng, R rel = R{}, P proj = P{}) const
+      {
+        return (*this)(begin(rng), end(rng), std::move(rel), std::move(proj));
+      }
+    };
 
-        /// \sa `is_sorted_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<is_sorted_fn>, is_sorted)
-        /// @}
-    } // namespace v3
+    /// \sa `is_sorted_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<is_sorted_fn>, is_sorted)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

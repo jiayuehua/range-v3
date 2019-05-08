@@ -18,21 +18,21 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \ingroup group-utility
+    template<typename T>
+    constexpr T *_nullptr_v()
     {
-        /// \ingroup group-utility
-        template<typename T>
-        constexpr T *_nullptr_v()
-        {
-            return nullptr;
-        }
-
-    #if RANGES_CXX_VARIABLE_TEMPLATES
-        /// \ingroup group-utility
-        template<typename T>
-        constexpr T *nullptr_v = nullptr;
-    #endif
+      return nullptr;
     }
+
+  #if RANGES_CXX_VARIABLE_TEMPLATES
+    /// \ingroup group-utility
+    template<typename T>
+    constexpr T *nullptr_v = nullptr;
+  #endif
+  }
 }
 
 #endif

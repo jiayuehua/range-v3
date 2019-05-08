@@ -23,83 +23,83 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-actions
+    /// @{
+    namespace action
     {
-        /// \addtogroup group-actions
-        /// @{
-        namespace action
+      struct remove_fn
+      {
+      private:
+        struct ComparableWithRangeRef_
         {
-            struct remove_fn
-            {
-            private:
-                struct ComparableWithRangeRef_
-                {
-                    template<typename Val, typename Rng,
-                        typename Ref = range_reference_t<Rng>>
-                    auto requires_() -> decltype(
-                        concepts::valid_expr(
-                            concepts::model_of<concepts::EqualityComparable, Ref, Val>()
-                        ));
-                };
+          template<typename Val, typename Rng,
+            typename Ref = range_reference_t<Rng>>
+          auto requires_() -> decltype(
+            concepts::valid_expr(
+              concepts::model_of<concepts::EqualityComparable, Ref, Val>()
+            ));
+        };
 
-                friend action_access;
-                template<typename V, typename P,
-                    CONCEPT_REQUIRES_(!(Range<V>() &&
-                        concepts::models<ComparableWithRangeRef_, P, V>()))>
-                static auto bind(remove_fn remove, V &&value, P proj)
-                RANGES_DECLTYPE_AUTO_RETURN
-                (
-                    std::bind(remove,
-                        std::placeholders::_1,
-                        bind_forward<V>(value),
-                        protect(std::move(proj))
-                    )
-                )
+        friend action_access;
+        template<typename V, typename P,
+          CONCEPT_REQUIRES_(!(Range<V>() &&
+            concepts::models<ComparableWithRangeRef_, P, V>()))>
+        static auto bind(remove_fn remove, V &&value, P proj)
+        RANGES_DECLTYPE_AUTO_RETURN
+        (
+          std::bind(remove,
+            std::placeholders::_1,
+            bind_forward<V>(value),
+            protect(std::move(proj))
+          )
+        )
 
-                template<typename V>
-                static auto bind(remove_fn remove, V &&value)
-                RANGES_DECLTYPE_AUTO_RETURN
-                (
-                    std::bind(remove,
-                        std::placeholders::_1,
-                        bind_forward<V>(value),
-                        ident{}
-                    )
-                )
-            public:
-                struct ConceptImpl
-                {
-                    template<typename Rng, typename V, typename P = ident,
-                        typename I = iterator_t<Rng>>
-                    auto requires_() -> decltype(
-                        concepts::valid_expr(
-                            concepts::model_of<concepts::ForwardRange, Rng>(),
-                            concepts::model_of<concepts::ErasableRange, Rng, I, I>(),
-                            concepts::is_true(Removable<I, V, P>())
-                        ));
-                };
+        template<typename V>
+        static auto bind(remove_fn remove, V &&value)
+        RANGES_DECLTYPE_AUTO_RETURN
+        (
+          std::bind(remove,
+            std::placeholders::_1,
+            bind_forward<V>(value),
+            ident{}
+          )
+        )
+      public:
+        struct ConceptImpl
+        {
+          template<typename Rng, typename V, typename P = ident,
+            typename I = iterator_t<Rng>>
+          auto requires_() -> decltype(
+            concepts::valid_expr(
+              concepts::model_of<concepts::ForwardRange, Rng>(),
+              concepts::model_of<concepts::ErasableRange, Rng, I, I>(),
+              concepts::is_true(Removable<I, V, P>())
+            ));
+        };
 
-                template<typename Rng, typename V, typename P = ident>
-                using Concept = concepts::models<ConceptImpl, Rng, V, P>;
+        template<typename Rng, typename V, typename P = ident>
+        using Concept = concepts::models<ConceptImpl, Rng, V, P>;
 
-                template<typename Rng, typename V, typename P = ident,
-                    CONCEPT_REQUIRES_(Concept<Rng, V, P>())>
-                Rng operator()(Rng &&rng, V const &value, P proj = {}) const
-                {
-                    auto it = ranges::remove(rng, value, std::move(proj));
-                    ranges::erase(rng, it, ranges::end(rng));
-                    return static_cast<Rng&&>(rng);
-                }
-            };
-
-
-            /// \ingroup group-actions
-            /// \sa action
-            /// \sa with_braced_init_args
-            RANGES_INLINE_VARIABLE(action<remove_fn>, remove)
+        template<typename Rng, typename V, typename P = ident,
+          CONCEPT_REQUIRES_(Concept<Rng, V, P>())>
+        Rng operator()(Rng &&rng, V const &value, P proj = {}) const
+        {
+          auto it = ranges::remove(rng, value, std::move(proj));
+          ranges::erase(rng, it, ranges::end(rng));
+          return static_cast<Rng&&>(rng);
         }
-        /// @}
+      };
+
+
+      /// \ingroup group-actions
+      /// \sa action
+      /// \sa with_braced_init_args
+      RANGES_INLINE_VARIABLE(action<remove_fn>, remove)
     }
+    /// @}
+  }
 }
 
 #endif // include guard

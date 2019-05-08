@@ -32,106 +32,106 @@ RANGES_DIAGNOSTIC_IGNORE_GLOBAL_CONSTRUCTORS
 
 namespace
 {
-    std::mt19937 gen;
+  std::mt19937 gen;
 
-    template<class Iter, class Sent = Iter>
-    void
-    test_iter(Iter first, Sent last)
-    {
-        RANGES_ENSURE(first != last);
-        auto rng = ranges::make_iterator_range(first, last);
-        auto v1 = ranges::min(rng);
-        for (Iter i = first; i != last; ++i)
-            CHECK(!(*i < v1));
-    }
+  template<class Iter, class Sent = Iter>
+  void
+  test_iter(Iter first, Sent last)
+  {
+    RANGES_ENSURE(first != last);
+    auto rng = ranges::make_iterator_range(first, last);
+    auto v1 = ranges::min(rng);
+    for (Iter i = first; i != last; ++i)
+      CHECK(!(*i < v1));
+  }
 
-    template<class Iter, class Sent = Iter>
-    void
-    test_iter(unsigned N)
-    {
-        RANGES_ENSURE(N > 0);
-        std::unique_ptr<int[]> a{new int[N]};
-        std::iota(a.get(), a.get()+N, 0);
-        std::shuffle(a.get(), a.get()+N, gen);
-        test_iter(Iter(a.get()), Sent(a.get()+N));
-    }
+  template<class Iter, class Sent = Iter>
+  void
+  test_iter(unsigned N)
+  {
+    RANGES_ENSURE(N > 0);
+    std::unique_ptr<int[]> a{new int[N]};
+    std::iota(a.get(), a.get()+N, 0);
+    std::shuffle(a.get(), a.get()+N, gen);
+    test_iter(Iter(a.get()), Sent(a.get()+N));
+  }
 
-    template<class Iter, class Sent = Iter>
-    void
-    test_iter()
-    {
-        test_iter<Iter, Sent>(1);
-        test_iter<Iter, Sent>(2);
-        test_iter<Iter, Sent>(3);
-        test_iter<Iter, Sent>(10);
-        test_iter<Iter, Sent>(1000);
-    }
+  template<class Iter, class Sent = Iter>
+  void
+  test_iter()
+  {
+    test_iter<Iter, Sent>(1);
+    test_iter<Iter, Sent>(2);
+    test_iter<Iter, Sent>(3);
+    test_iter<Iter, Sent>(10);
+    test_iter<Iter, Sent>(1000);
+  }
 
-    template<class Iter, class Sent = Iter>
-    void
-    test_iter_comp(Iter first, Sent last)
-    {
-        RANGES_ENSURE(first != last);
-        auto rng = ranges::make_iterator_range(first, last);
-        auto v = ranges::min(rng, std::greater<int>());
-        for (Iter i = first; i != last; ++i)
-            CHECK(!std::greater<int>()(*i, v));
-    }
+  template<class Iter, class Sent = Iter>
+  void
+  test_iter_comp(Iter first, Sent last)
+  {
+    RANGES_ENSURE(first != last);
+    auto rng = ranges::make_iterator_range(first, last);
+    auto v = ranges::min(rng, std::greater<int>());
+    for (Iter i = first; i != last; ++i)
+      CHECK(!std::greater<int>()(*i, v));
+  }
 
-    template<class Iter, class Sent = Iter>
-    void
-    test_iter_comp(unsigned N)
-    {
-        RANGES_ENSURE(N > 0);
-        std::unique_ptr<int[]> a{new int[N]};
-        std::iota(a.get(), a.get()+N, 0);
-        std::shuffle(a.get(), a.get()+N, gen);
-        test_iter_comp(Iter(a.get()), Sent(a.get()+N));
-    }
+  template<class Iter, class Sent = Iter>
+  void
+  test_iter_comp(unsigned N)
+  {
+    RANGES_ENSURE(N > 0);
+    std::unique_ptr<int[]> a{new int[N]};
+    std::iota(a.get(), a.get()+N, 0);
+    std::shuffle(a.get(), a.get()+N, gen);
+    test_iter_comp(Iter(a.get()), Sent(a.get()+N));
+  }
 
-    template<class Iter, class Sent = Iter>
-    void
-    test_iter_comp()
-    {
-        test_iter_comp<Iter, Sent>(1);
-        test_iter_comp<Iter, Sent>(2);
-        test_iter_comp<Iter, Sent>(3);
-        test_iter_comp<Iter, Sent>(10);
-        test_iter_comp<Iter, Sent>(1000);
-    }
+  template<class Iter, class Sent = Iter>
+  void
+  test_iter_comp()
+  {
+    test_iter_comp<Iter, Sent>(1);
+    test_iter_comp<Iter, Sent>(2);
+    test_iter_comp<Iter, Sent>(3);
+    test_iter_comp<Iter, Sent>(10);
+    test_iter_comp<Iter, Sent>(1000);
+  }
 
-    struct S
-    {
-        int i;
-    };
+  struct S
+  {
+    int i;
+  };
 }
 
 int main()
 {
-    test_iter<input_iterator<const int*> >();
-    test_iter<forward_iterator<const int*> >();
-    test_iter<bidirectional_iterator<const int*> >();
-    test_iter<random_access_iterator<const int*> >();
-    test_iter<const int*>();
-    test_iter<input_iterator<const int*>, sentinel<const int*>>();
-    test_iter<forward_iterator<const int*>, sentinel<const int*>>();
-    test_iter<bidirectional_iterator<const int*>, sentinel<const int*>>();
-    test_iter<random_access_iterator<const int*>, sentinel<const int*>>();
+  test_iter<input_iterator<const int*> >();
+  test_iter<forward_iterator<const int*> >();
+  test_iter<bidirectional_iterator<const int*> >();
+  test_iter<random_access_iterator<const int*> >();
+  test_iter<const int*>();
+  test_iter<input_iterator<const int*>, sentinel<const int*>>();
+  test_iter<forward_iterator<const int*>, sentinel<const int*>>();
+  test_iter<bidirectional_iterator<const int*>, sentinel<const int*>>();
+  test_iter<random_access_iterator<const int*>, sentinel<const int*>>();
 
-    test_iter_comp<input_iterator<const int*> >();
-    test_iter_comp<forward_iterator<const int*> >();
-    test_iter_comp<bidirectional_iterator<const int*> >();
-    test_iter_comp<random_access_iterator<const int*> >();
-    test_iter_comp<const int*>();
-    test_iter_comp<input_iterator<const int*>, sentinel<const int*>>();
-    test_iter_comp<forward_iterator<const int*>, sentinel<const int*>>();
-    test_iter_comp<bidirectional_iterator<const int*>, sentinel<const int*>>();
-    test_iter_comp<random_access_iterator<const int*>, sentinel<const int*>>();
+  test_iter_comp<input_iterator<const int*> >();
+  test_iter_comp<forward_iterator<const int*> >();
+  test_iter_comp<bidirectional_iterator<const int*> >();
+  test_iter_comp<random_access_iterator<const int*> >();
+  test_iter_comp<const int*>();
+  test_iter_comp<input_iterator<const int*>, sentinel<const int*>>();
+  test_iter_comp<forward_iterator<const int*>, sentinel<const int*>>();
+  test_iter_comp<bidirectional_iterator<const int*>, sentinel<const int*>>();
+  test_iter_comp<random_access_iterator<const int*>, sentinel<const int*>>();
 
-    // Works with projections?
-    S s[] = {S{1},S{2},S{3},S{4},S{-4},S{5},S{6},S{7},S{8},S{9}};
-    S v = ranges::min(s, std::less<int>{}, &S::i);
-    CHECK(v.i == -4);
+  // Works with projections?
+  S s[] = {S{1},S{2},S{3},S{4},S{-4},S{5},S{6},S{7},S{8},S{9}};
+  S v = ranges::min(s, std::less<int>{}, &S::i);
+  CHECK(v.i == -4);
 
-    return test_result();
+  return test_result();
 }

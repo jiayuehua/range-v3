@@ -25,56 +25,56 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct reverse_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct reverse_fn
+    private:
+      template<typename I>
+      static void impl(I begin, I end, concepts::BidirectionalIterator*)
+      {
+        while(begin != end)
         {
-        private:
-            template<typename I>
-            static void impl(I begin, I end, concepts::BidirectionalIterator*)
-            {
-                while(begin != end)
-                {
-                    if(begin == --end)
-                        break;
-                    ranges::iter_swap(begin, end);
-                    ++begin;
-                }
-            }
+          if(begin == --end)
+            break;
+          ranges::iter_swap(begin, end);
+          ++begin;
+        }
+      }
 
-            template<typename I>
-            static void impl(I begin, I end, concepts::RandomAccessIterator*)
-            {
-                if(begin != end)
-                    for(; begin < --end; ++begin)
-                        ranges::iter_swap(begin, end);
-            }
+      template<typename I>
+      static void impl(I begin, I end, concepts::RandomAccessIterator*)
+      {
+        if(begin != end)
+          for(; begin < --end; ++begin)
+            ranges::iter_swap(begin, end);
+      }
 
-        public:
-            template<typename I, typename S,
-                CONCEPT_REQUIRES_(BidirectionalIterator<I>() && Sentinel<S, I>() && Permutable<I>())>
-            I operator()(I begin, S end_) const
-            {
-                I end = ranges::next(begin, end_);
-                reverse_fn::impl(begin, end, iterator_concept<I>{});
-                return end;
-            }
+    public:
+      template<typename I, typename S,
+        CONCEPT_REQUIRES_(BidirectionalIterator<I>() && Sentinel<S, I>() && Permutable<I>())>
+      I operator()(I begin, S end_) const
+      {
+        I end = ranges::next(begin, end_);
+        reverse_fn::impl(begin, end, iterator_concept<I>{});
+        return end;
+      }
 
-            template<typename Rng, typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(BidirectionalRange<Rng>() && Permutable<I>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng) const
-            {
-                return (*this)(begin(rng), end(rng));
-            }
-        };
+      template<typename Rng, typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(BidirectionalRange<Rng>() && Permutable<I>())>
+      safe_iterator_t<Rng> operator()(Rng &&rng) const
+      {
+        return (*this)(begin(rng), end(rng));
+      }
+    };
 
-        /// \sa `reverse_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<reverse_fn>, reverse)
-        /// @}
-    } // namespace v3
+    /// \sa `reverse_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<reverse_fn>, reverse)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

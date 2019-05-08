@@ -155,129 +155,129 @@
 namespace meta
 {
 #if META_CXX_INTEGER_SEQUENCE
-    using std::integer_sequence;
+  using std::integer_sequence;
 #else
-    template <typename T, T...>
-    struct integer_sequence;
+  template <typename T, T...>
+  struct integer_sequence;
 #endif
 
-    template <typename... Ts>
-    struct list;
+  template <typename... Ts>
+  struct list;
 
-    template <typename T>
-    struct id;
+  template <typename T>
+  struct id;
 
-    template <template <typename...> class>
-    struct quote;
+  template <template <typename...> class>
+  struct quote;
 
-    template <typename T, template <T...> class F>
-    struct quote_i;
+  template <typename T, template <T...> class F>
+  struct quote_i;
 
-    template <template <typename...> class C, typename... Ts>
-    struct defer;
+  template <template <typename...> class C, typename... Ts>
+  struct defer;
 
-    template <typename T, template <T...> class C, T... Is>
-    struct defer_i;
+  template <typename T, template <T...> class C, T... Is>
+  struct defer_i;
 
 #if META_CXX_VARIABLE_TEMPLATES || defined(META_DOXYGEN_INVOKED)
-    /// is_v
-    /// Test whether a type \p T is an instantiation of class
-    /// template \p C.
-    /// \ingroup trait
-    template <typename, template <typename...> class>
-    META_INLINE_VAR constexpr bool is_v = false;
-    template <typename... Ts, template <typename...> class C>
-    META_INLINE_VAR constexpr bool is_v<C<Ts...>, C> = true;
+  /// is_v
+  /// Test whether a type \p T is an instantiation of class
+  /// template \p C.
+  /// \ingroup trait
+  template <typename, template <typename...> class>
+  META_INLINE_VAR constexpr bool is_v = false;
+  template <typename... Ts, template <typename...> class C>
+  META_INLINE_VAR constexpr bool is_v<C<Ts...>, C> = true;
 #endif
 
 #ifdef META_CONCEPT
-    namespace detail
-    {
-        template <bool B>
-        META_INLINE_VAR constexpr bool bool_ = B;
+  namespace detail
+  {
+    template <bool B>
+    META_INLINE_VAR constexpr bool bool_ = B;
 
-        template <auto> struct require_constant; // not defined
-    }
+    template <auto> struct require_constant; // not defined
+  }
 
-    template <typename...>
-    META_CONCEPT True = META_CONCEPT_BARRIER(true);
+  template <typename...>
+  META_CONCEPT True = META_CONCEPT_BARRIER(true);
 
-    template <typename T, typename U>
-    META_CONCEPT Same =
+  template <typename T, typename U>
+  META_CONCEPT Same =
 #if defined(__clang__)
-        META_CONCEPT_BARRIER(__is_same(T, U));
+    META_CONCEPT_BARRIER(__is_same(T, U));
 #elif defined(__GNUC__) && __GNUC__ >= 6
-        META_CONCEPT_BARRIER(__is_same_as(T, U));
+    META_CONCEPT_BARRIER(__is_same_as(T, U));
 #else
-        META_CONCEPT_BARRIER(std::is_same_v<T, U>);
+    META_CONCEPT_BARRIER(std::is_same_v<T, U>);
 #endif
 
-    template <template <typename...> class C, typename... Ts>
-    META_CONCEPT Valid = requires
-    {
-        typename C<Ts...>;
-    };
+  template <template <typename...> class C, typename... Ts>
+  META_CONCEPT Valid = requires
+  {
+    typename C<Ts...>;
+  };
 
-    template <typename T, template <T...> class C, T... Is>
-    META_CONCEPT Valid_I = requires
-    {
-        typename C<Is...>;
-    };
+  template <typename T, template <T...> class C, T... Is>
+  META_CONCEPT Valid_I = requires
+  {
+    typename C<Is...>;
+  };
 
-    template <typename T>
-    META_CONCEPT Trait = requires
-    {
-        typename T::type;
-    };
+  template <typename T>
+  META_CONCEPT Trait = requires
+  {
+    typename T::type;
+  };
 
-    template <typename T>
-    META_CONCEPT Invocable = requires
-    {
-        typename quote<T::template invoke>;
-    };
+  template <typename T>
+  META_CONCEPT Invocable = requires
+  {
+    typename quote<T::template invoke>;
+  };
 
-    template <typename T>
-    META_CONCEPT List = is_v<T, list>;
+  template <typename T>
+  META_CONCEPT List = is_v<T, list>;
 
-    // clang-format off
-    template <typename T>
-    META_CONCEPT Integral = requires
-    {
-        typename T::type;
-        typename T::value_type;
-        typename T::type::value_type;
-    }
-    && Same<typename T::value_type, typename T::type::value_type>
-    && std::is_integral_v<typename T::value_type>
-    && requires
-    {
-        // { T::value } -> Same<const typename T::value_type&>;
-        T::value;
-        requires Same<decltype(T::value), const typename T::value_type>;
-        typename detail::require_constant<T::value>;
+  // clang-format off
+  template <typename T>
+  META_CONCEPT Integral = requires
+  {
+    typename T::type;
+    typename T::value_type;
+    typename T::type::value_type;
+  }
+  && Same<typename T::value_type, typename T::type::value_type>
+  && std::is_integral_v<typename T::value_type>
+  && requires
+  {
+    // { T::value } -> Same<const typename T::value_type&>;
+    T::value;
+    requires Same<decltype(T::value), const typename T::value_type>;
+    typename detail::require_constant<T::value>;
 
-        // { T::type::value } -> Same<const typename T::value_type&>;
-        T::type::value;
-        requires Same<decltype(T::type::value), const typename T::value_type>;
-        typename detail::require_constant<T::type::value>;
-        requires T::value == T::type::value;
+    // { T::type::value } -> Same<const typename T::value_type&>;
+    T::type::value;
+    requires Same<decltype(T::type::value), const typename T::value_type>;
+    typename detail::require_constant<T::type::value>;
+    requires T::value == T::type::value;
 
-        // { T{}() } -> Same<typename T::value_type>;
-        T{}();
-        requires Same<decltype(T{}()), typename T::value_type>;
-        typename detail::require_constant<T{}()>;
-        requires T{}() == T::value;
+    // { T{}() } -> Same<typename T::value_type>;
+    T{}();
+    requires Same<decltype(T{}()), typename T::value_type>;
+    typename detail::require_constant<T{}()>;
+    requires T{}() == T::value;
 
-        { T{} } -> typename T::value_type;
-    };
-    // clang-format on
+    { T{} } -> typename T::value_type;
+  };
+  // clang-format on
 #endif // META_CONCEPT
 
-    namespace extension
-    {
-        template <META_TYPE_CONSTRAINT(Invocable) F, typename L>
-        struct apply;
-    }
+  namespace extension
+  {
+    template <META_TYPE_CONSTRAINT(Invocable) F, typename L>
+    struct apply;
+  }
 } // namespace meta
 
 #ifdef __clang__

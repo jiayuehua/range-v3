@@ -17,39 +17,39 @@
 
 #include <iosfwd>
 #if (defined(NDEBUG) && !defined(RANGES_ENSURE_MSG)) || \
-    (!defined(NDEBUG) && !defined(RANGES_ASSERT) && \
-     ((defined(__GNUC__) && !defined(__clang__) && (__GNUC__ < 5 || defined(__MINGW32__))) || \
-      defined(_MSVC_STL_VERSION)))
+  (!defined(NDEBUG) && !defined(RANGES_ASSERT) && \
+   ((defined(__GNUC__) && !defined(__clang__) && (__GNUC__ < 5 || defined(__MINGW32__))) || \
+    defined(_MSVC_STL_VERSION)))
 #include <cstdio>
 #include <cstdlib>
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    namespace detail
     {
-        namespace detail
-        {
-            template<class = void>
-            [[noreturn]] void assert_failure(char const *file, int line, char const *msg)
-            {
-                std::fprintf(stderr, "%s(%d): %s\n", file, line, msg);
-                std::abort();
-            }
-        }
+      template<class = void>
+      [[noreturn]] void assert_failure(char const *file, int line, char const *msg)
+      {
+        std::fprintf(stderr, "%s(%d): %s\n", file, line, msg);
+        std::abort();
+      }
     }
+  }
 }
 #endif
 
 #ifndef RANGES_ASSERT
-    // Always use our hand-rolled assert implementation on older GCCs, which do
-    // not allow assert to be used in a constant expression, and on MSVC whose
-    // assert is not marked [[noreturn]].
+  // Always use our hand-rolled assert implementation on older GCCs, which do
+  // not allow assert to be used in a constant expression, and on MSVC whose
+  // assert is not marked [[noreturn]].
 #if !defined(NDEBUG) && \
-    ((defined(__GNUC__) && !defined(__clang__) && (__GNUC__ < 5 || defined(__MINGW32__))) || \
-     defined(_MSVC_STL_VERSION))
+  ((defined(__GNUC__) && !defined(__clang__) && (__GNUC__ < 5 || defined(__MINGW32__))) || \
+   defined(_MSVC_STL_VERSION))
 #define RANGES_ASSERT(...) \
-    static_cast<void>((__VA_ARGS__) ? void(0) : \
-        ::ranges::detail::assert_failure(__FILE__, __LINE__, "assertion failed: " #__VA_ARGS__))
+  static_cast<void>((__VA_ARGS__) ? void(0) : \
+    ::ranges::detail::assert_failure(__FILE__, __LINE__, "assertion failed: " #__VA_ARGS__))
 #else
 #include <cassert>
 #define RANGES_ASSERT assert
@@ -77,8 +77,8 @@ namespace ranges
 #ifndef RANGES_ENSURE_MSG
 #if defined(NDEBUG)
 #define RANGES_ENSURE_MSG(COND, MSG) \
-    static_cast<void>((COND) ? void(0) \
-        : ::ranges::detail::assert_failure(__FILE__, __LINE__, "ensure failed: " MSG))
+  static_cast<void>((COND) ? void(0) \
+    : ::ranges::detail::assert_failure(__FILE__, __LINE__, "ensure failed: " MSG))
 #else
 #define RANGES_ENSURE_MSG(COND, MSG) RANGES_ASSERT((COND) && MSG)
 #endif
@@ -89,25 +89,25 @@ namespace ranges
 #endif
 
 #define RANGES_DECLTYPE_AUTO_RETURN(...)                        \
-    -> decltype(__VA_ARGS__)                                    \
-    { return (__VA_ARGS__); }                                   \
-    /**/
+  -> decltype(__VA_ARGS__)                                    \
+  { return (__VA_ARGS__); }                                   \
+  /**/
 
 #define RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(...)               \
-    noexcept(noexcept(decltype(__VA_ARGS__)(__VA_ARGS__))) ->   \
-    decltype(__VA_ARGS__)                                       \
-    { return (__VA_ARGS__); }                                   \
-    /**/
+  noexcept(noexcept(decltype(__VA_ARGS__)(__VA_ARGS__))) ->   \
+  decltype(__VA_ARGS__)                                       \
+  { return (__VA_ARGS__); }                                   \
+  /**/
 
 #define RANGES_AUTO_RETURN_NOEXCEPT(...)                        \
-    noexcept(noexcept(decltype(__VA_ARGS__)(__VA_ARGS__)))      \
-    { return (__VA_ARGS__); }                                   \
-    /**/
+  noexcept(noexcept(decltype(__VA_ARGS__)(__VA_ARGS__)))      \
+  { return (__VA_ARGS__); }                                   \
+  /**/
 
 #define RANGES_DECLTYPE_NOEXCEPT(...)                           \
-    noexcept(noexcept(decltype(__VA_ARGS__)(__VA_ARGS__))) ->   \
-    decltype(__VA_ARGS__)                                       \
-    /**/
+  noexcept(noexcept(decltype(__VA_ARGS__)(__VA_ARGS__))) ->   \
+  decltype(__VA_ARGS__)                                       \
+  /**/
 
 // Non-portable forward declarations of standard containers
 #ifdef _LIBCPP_VERSION
@@ -199,7 +199,7 @@ namespace ranges
 #define RANGES_DIAGNOSTIC_IGNORE_DEPRECATED_THIS_CAPTURE
 // Ignores both "divide by zero" and "mod by zero":
 #define RANGES_DIAGNOSTIC_IGNORE_DIVIDE_BY_ZERO \
-    RANGES_DIAGNOSTIC_IGNORE(4723) RANGES_DIAGNOSTIC_IGNORE(4724)
+  RANGES_DIAGNOSTIC_IGNORE(4723) RANGES_DIAGNOSTIC_IGNORE(4724)
 
 #define RANGES_CXX_VER _MSVC_LANG
 
@@ -231,10 +231,10 @@ namespace ranges
 #define RANGES_DIAGNOSTIC_POP RANGES_PRAGMA(GCC diagnostic pop)
 #define RANGES_DIAGNOSTIC_IGNORE_PRAGMAS RANGES_PRAGMA(GCC diagnostic ignored "-Wpragmas")
 #define RANGES_DIAGNOSTIC_IGNORE(X) \
-    RANGES_DIAGNOSTIC_IGNORE_PRAGMAS \
-    RANGES_PRAGMA(GCC diagnostic ignored "-Wunknown-pragmas") \
-    RANGES_PRAGMA(GCC diagnostic ignored "-Wunknown-warning-option") \
-    RANGES_PRAGMA(GCC diagnostic ignored X)
+  RANGES_DIAGNOSTIC_IGNORE_PRAGMAS \
+  RANGES_PRAGMA(GCC diagnostic ignored "-Wunknown-pragmas") \
+  RANGES_PRAGMA(GCC diagnostic ignored "-Wunknown-warning-option") \
+  RANGES_PRAGMA(GCC diagnostic ignored X)
 #define RANGES_DIAGNOSTIC_IGNORE_SHADOWING RANGES_DIAGNOSTIC_IGNORE("-Wshadow")
 #define RANGES_DIAGNOSTIC_IGNORE_INDENTATION RANGES_DIAGNOSTIC_IGNORE("-Wmisleading-indentation")
 #define RANGES_DIAGNOSTIC_IGNORE_UNDEFINED_INTERNAL RANGES_DIAGNOSTIC_IGNORE("-Wundefined-internal")
@@ -376,7 +376,7 @@ namespace ranges
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && __IPHONE_OS_VERSION_MIN_REQUIRED <= 70100
 #define RANGES_CXX_THREAD_LOCAL 0
 #elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED) || \
-    (defined(__clang__) && (defined(__CYGWIN__) || defined(__apple_build_version__)))
+  (defined(__clang__) && (defined(__CYGWIN__) || defined(__apple_build_version__)))
 // BUGBUG avoid unresolved __cxa_thread_atexit
 #define RANGES_CXX_THREAD_LOCAL RANGES_CXX_THREAD_LOCAL_PRE_STANDARD
 #else
@@ -387,7 +387,7 @@ namespace ranges
 #if !defined(RANGES_DEPRECATED) && !defined(RANGES_DISABLE_DEPRECATED_WARNINGS)
 #if RANGES_CXX_ATTRIBUTE_DEPRECATED &&            \
    !((defined(__clang__) || defined(__GNUC__)) && \
-     RANGES_CXX_STD < RANGES_CXX_STD_14)
+   RANGES_CXX_STD < RANGES_CXX_STD_14)
 #define RANGES_DEPRECATED(MSG) [[deprecated(MSG)]]
 #elif defined(__clang__) || defined(__GNUC__)
 #define RANGES_DEPRECATED(MSG) __attribute__((deprecated(MSG)))
@@ -424,7 +424,7 @@ namespace ranges
 #ifdef __cpp_inline_variables
 #define RANGES_CXX_INLINE_VARIABLES __cpp_inline_variables
 #elif defined(__clang__) && (__clang_major__ == 3 && __clang_minor__ == 9) && \
-    RANGES_CXX_VER > RANGES_CXX_STD_14
+  RANGES_CXX_VER > RANGES_CXX_STD_14
 // Clang 3.9 supports inline variables in C++17 mode, but doesn't define __cpp_inline_variables
 #define RANGES_CXX_INLINE_VARIABLES RANGES_CXX_INLINE_VARIABLES_17
 #else
@@ -434,13 +434,13 @@ namespace ranges
 
 #if RANGES_CXX_INLINE_VARIABLES < RANGES_CXX_INLINE_VARIABLES_17
 #define RANGES_INLINE_VARIABLE(type, name)                          \
-    inline namespace                                                \
-    {                                                               \
-        constexpr auto &name = ::ranges::static_const<type>::value; \
-    }
+  inline namespace                                                \
+  {                                                               \
+    constexpr auto &name = ::ranges::static_const<type>::value; \
+  }
 #else  // RANGES_CXX_INLINE_VARIABLES >= RANGES_CXX_INLINE_VARIABLES_17
 #define RANGES_INLINE_VARIABLE(type, name) \
-    inline constexpr type name{};
+  inline constexpr type name{};
 #endif // RANGES_CXX_INLINE_VARIABLES
 
 #ifndef RANGES_CXX_DEDUCTION_GUIDES
@@ -465,8 +465,8 @@ namespace ranges
 // Its not enough for the compiler to support this; the stdlib must support it too.
 #ifndef RANGES_CXX_ALIGNED_NEW
 #if (!defined(_LIBCPP_VERSION) || \
-		(_LIBCPP_VERSION >= 4000 && !defined(_LIBCPP_HAS_NO_ALIGNED_ALLOCATION))) && \
-    (!defined(__GLIBCXX__) || (defined(_GLIBCXX_RELEASE) && _GLIBCXX_RELEASE >= 7))
+    (_LIBCPP_VERSION >= 4000 && !defined(_LIBCPP_HAS_NO_ALIGNED_ALLOCATION))) && \
+  (!defined(__GLIBCXX__) || (defined(_GLIBCXX_RELEASE) && _GLIBCXX_RELEASE >= 7))
 #if defined(__cpp_aligned_new)
 #define RANGES_CXX_ALIGNED_NEW __cpp_aligned_new
 #else
@@ -479,11 +479,11 @@ namespace ranges
 
 #ifdef RANGES_FEWER_WARNINGS
 #define RANGES_DISABLE_WARNINGS                 \
-    RANGES_DIAGNOSTIC_PUSH                      \
-    RANGES_DIAGNOSTIC_IGNORE_SHADOWING          \
-    RANGES_DIAGNOSTIC_IGNORE_UNDEFINED_INTERNAL \
-    RANGES_DIAGNOSTIC_IGNORE_INDENTATION        \
-    RANGES_DIAGNOSTIC_IGNORE_CXX17_COMPAT
+  RANGES_DIAGNOSTIC_PUSH                      \
+  RANGES_DIAGNOSTIC_IGNORE_SHADOWING          \
+  RANGES_DIAGNOSTIC_IGNORE_UNDEFINED_INTERNAL \
+  RANGES_DIAGNOSTIC_IGNORE_INDENTATION        \
+  RANGES_DIAGNOSTIC_IGNORE_CXX17_COMPAT
 
 #define RANGES_RE_ENABLE_WARNINGS RANGES_DIAGNOSTIC_POP
 #else
@@ -511,9 +511,9 @@ namespace ranges
 #endif // RANGES_CONSTEXPR_IF
 
 #if !defined(RANGES_BROKEN_CPO_LOOKUP) && !defined(RANGES_DOXYGEN_INVOKED) && \
-    (defined(RANGES_WORKAROUND_CLANG_37556) || \
-     defined(RANGES_WORKAROUND_GCC_UNFILED0) || \
-     defined(RANGES_WORKAROUND_MSVC_589046) || defined(RANGES_WORKAROUND_MSVC_620035))
+  (defined(RANGES_WORKAROUND_CLANG_37556) || \
+   defined(RANGES_WORKAROUND_GCC_UNFILED0) || \
+   defined(RANGES_WORKAROUND_MSVC_589046) || defined(RANGES_WORKAROUND_MSVC_620035))
 #define RANGES_BROKEN_CPO_LOOKUP 1
 #endif
 #ifndef RANGES_BROKEN_CPO_LOOKUP

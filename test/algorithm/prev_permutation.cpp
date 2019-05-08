@@ -33,185 +33,185 @@
 
 int factorial(int x)
 {
-    int r = 1;
-    for (; x; --x)
-        r *= x;
-    return r;
+  int r = 1;
+  for (; x; --x)
+    r *= x;
+  return r;
 }
 
 template<typename Iter, typename Sent = Iter>
 void test_iter()
 {
-    int ia[] = {6, 5, 4, 3, 2, 1};
-    const int sa = sizeof(ia)/sizeof(ia[0]);
-    int prev[sa];
-    for (int e = 0; e <= sa; ++e)
+  int ia[] = {6, 5, 4, 3, 2, 1};
+  const int sa = sizeof(ia)/sizeof(ia[0]);
+  int prev[sa];
+  for (int e = 0; e <= sa; ++e)
+  {
+    int count = 0;
+    bool x;
+    do
     {
-        int count = 0;
-        bool x;
-        do
-        {
-            std::copy(ia, ia+e, prev);
-            x = ranges::prev_permutation(Iter(ia), Sent(ia+e));
-            if(e > 1)
-            {
-                if(!x)
-                    CHECK(std::lexicographical_compare(prev, prev+e, ia, ia+e));
-                else
-                    CHECK(std::lexicographical_compare(ia, ia+e, prev, prev+e));
-            }
-            ++count;
-        } while(x);
-        CHECK(count == factorial(e));
-    }
+      std::copy(ia, ia+e, prev);
+      x = ranges::prev_permutation(Iter(ia), Sent(ia+e));
+      if(e > 1)
+      {
+        if(!x)
+          CHECK(std::lexicographical_compare(prev, prev+e, ia, ia+e));
+        else
+          CHECK(std::lexicographical_compare(ia, ia+e, prev, prev+e));
+      }
+      ++count;
+    } while(x);
+    CHECK(count == factorial(e));
+  }
 }
 
 template<typename Iter, typename Sent = Iter>
 void test_range()
 {
-    int ia[] = {6, 5, 4, 3, 2, 1};
-    const int sa = sizeof(ia)/sizeof(ia[0]);
-    int prev[sa];
-    for (int e = 0; e <= sa; ++e)
+  int ia[] = {6, 5, 4, 3, 2, 1};
+  const int sa = sizeof(ia)/sizeof(ia[0]);
+  int prev[sa];
+  for (int e = 0; e <= sa; ++e)
+  {
+    int count = 0;
+    bool x;
+    do
     {
-        int count = 0;
-        bool x;
-        do
-        {
-            std::copy(ia, ia+e, prev);
-            x = ranges::prev_permutation(ranges::make_iterator_range(Iter(ia), Sent(ia+e)));
-            if(e > 1)
-            {
-                if(!x)
-                    CHECK(std::lexicographical_compare(prev, prev+e, ia, ia+e));
-                else
-                    CHECK(std::lexicographical_compare(ia, ia+e, prev, prev+e));
-            }
-            ++count;
-        } while(x);
-        CHECK(count == factorial(e));
-    }
+      std::copy(ia, ia+e, prev);
+      x = ranges::prev_permutation(ranges::make_iterator_range(Iter(ia), Sent(ia+e)));
+      if(e > 1)
+      {
+        if(!x)
+          CHECK(std::lexicographical_compare(prev, prev+e, ia, ia+e));
+        else
+          CHECK(std::lexicographical_compare(ia, ia+e, prev, prev+e));
+      }
+      ++count;
+    } while(x);
+    CHECK(count == factorial(e));
+  }
 }
 
 template<typename Iter, typename Sent = Iter>
 void test_iter_comp()
 {
-    typedef std::greater<int> C;
-    int ia[] = {1, 2, 3, 4, 5, 6};
-    const int sa = sizeof(ia)/sizeof(ia[0]);
-    int prev[sa];
-    for(int e = 0; e <= sa; ++e)
+  typedef std::greater<int> C;
+  int ia[] = {1, 2, 3, 4, 5, 6};
+  const int sa = sizeof(ia)/sizeof(ia[0]);
+  int prev[sa];
+  for(int e = 0; e <= sa; ++e)
+  {
+    int count = 0;
+    bool x;
+    do
     {
-        int count = 0;
-        bool x;
-        do
-        {
-            std::copy(ia, ia+e, prev);
-            x = ranges::prev_permutation(Iter(ia), Sent(ia+e), C());
-            if(e > 1)
-            {
-                if(!x)
-                    CHECK(std::lexicographical_compare(prev, prev+e, ia, ia+e, C()));
-                else
-                    CHECK(std::lexicographical_compare(ia, ia+e, prev, prev+e, C()));
-            }
-            ++count;
-        } while (x);
-        CHECK(count == factorial(e));
-    }
+      std::copy(ia, ia+e, prev);
+      x = ranges::prev_permutation(Iter(ia), Sent(ia+e), C());
+      if(e > 1)
+      {
+        if(!x)
+          CHECK(std::lexicographical_compare(prev, prev+e, ia, ia+e, C()));
+        else
+          CHECK(std::lexicographical_compare(ia, ia+e, prev, prev+e, C()));
+      }
+      ++count;
+    } while (x);
+    CHECK(count == factorial(e));
+  }
 }
 
 template<typename Iter, typename Sent = Iter>
 void test_range_comp()
 {
-    typedef std::greater<int> C;
-    int ia[] = {1, 2, 3, 4, 5, 6};
-    const int sa = sizeof(ia)/sizeof(ia[0]);
-    int prev[sa];
-    for(int e = 0; e <= sa; ++e)
+  typedef std::greater<int> C;
+  int ia[] = {1, 2, 3, 4, 5, 6};
+  const int sa = sizeof(ia)/sizeof(ia[0]);
+  int prev[sa];
+  for(int e = 0; e <= sa; ++e)
+  {
+    int count = 0;
+    bool x;
+    do
     {
-        int count = 0;
-        bool x;
-        do
-        {
-            std::copy(ia, ia+e, prev);
-            x = ranges::prev_permutation(ranges::make_iterator_range(Iter(ia), Sent(ia+e)), C());
-            if(e > 1)
-            {
-                if(!x)
-                    CHECK(std::lexicographical_compare(prev, prev+e, ia, ia+e, C()));
-                else
-                    CHECK(std::lexicographical_compare(ia, ia+e, prev, prev+e, C()));
-            }
-            ++count;
-        } while (x);
-            CHECK(count == factorial(e));
-    }
+      std::copy(ia, ia+e, prev);
+      x = ranges::prev_permutation(ranges::make_iterator_range(Iter(ia), Sent(ia+e)), C());
+      if(e > 1)
+      {
+        if(!x)
+          CHECK(std::lexicographical_compare(prev, prev+e, ia, ia+e, C()));
+        else
+          CHECK(std::lexicographical_compare(ia, ia+e, prev, prev+e, C()));
+      }
+      ++count;
+    } while (x);
+      CHECK(count == factorial(e));
+  }
 }
 
 struct c_str
 {
-    char const * value;
+  char const * value;
 
-    friend bool operator==(c_str a, c_str b)
-    {
-        return 0 == std::strcmp(a.value, b.value);
-    }
+  friend bool operator==(c_str a, c_str b)
+  {
+    return 0 == std::strcmp(a.value, b.value);
+  }
 
-    friend bool operator!=(c_str a, c_str b)
-    {
-        return !(a == b);
-    }
+  friend bool operator!=(c_str a, c_str b)
+  {
+    return !(a == b);
+  }
 };
 
 // For debugging the projection test
 std::ostream &operator<<(std::ostream& sout, std::pair<int, c_str> p)
 {
-    return sout << "{" << p.first << "," << p.second.value << "}";
+  return sout << "{" << p.first << "," << p.second.value << "}";
 }
 
 int main()
 {
-    test_iter<bidirectional_iterator<int*> >();
-    test_iter<random_access_iterator<int*> >();
-    test_iter<int*>();
+  test_iter<bidirectional_iterator<int*> >();
+  test_iter<random_access_iterator<int*> >();
+  test_iter<int*>();
 
-    test_iter<bidirectional_iterator<int*>, sentinel<int*> >();
-    test_iter<random_access_iterator<int*>, sentinel<int*> >();
+  test_iter<bidirectional_iterator<int*>, sentinel<int*> >();
+  test_iter<random_access_iterator<int*>, sentinel<int*> >();
 
-    test_iter_comp<bidirectional_iterator<int*> >();
-    test_iter_comp<random_access_iterator<int*> >();
-    test_iter_comp<int*>();
+  test_iter_comp<bidirectional_iterator<int*> >();
+  test_iter_comp<random_access_iterator<int*> >();
+  test_iter_comp<int*>();
 
-    test_iter_comp<bidirectional_iterator<int*>, sentinel<int*> >();
-    test_iter_comp<random_access_iterator<int*>, sentinel<int*> >();
+  test_iter_comp<bidirectional_iterator<int*>, sentinel<int*> >();
+  test_iter_comp<random_access_iterator<int*>, sentinel<int*> >();
 
-    test_range<bidirectional_iterator<int*> >();
-    test_range<random_access_iterator<int*> >();
-    test_range<int*>();
+  test_range<bidirectional_iterator<int*> >();
+  test_range<random_access_iterator<int*> >();
+  test_range<int*>();
 
-    test_range<bidirectional_iterator<int*>, sentinel<int*> >();
-    test_range<random_access_iterator<int*>, sentinel<int*> >();
+  test_range<bidirectional_iterator<int*>, sentinel<int*> >();
+  test_range<random_access_iterator<int*>, sentinel<int*> >();
 
-    test_range_comp<bidirectional_iterator<int*> >();
-    test_range_comp<random_access_iterator<int*> >();
-    test_range_comp<int*>();
+  test_range_comp<bidirectional_iterator<int*> >();
+  test_range_comp<random_access_iterator<int*> >();
+  test_range_comp<int*>();
 
-    test_range_comp<bidirectional_iterator<int*>, sentinel<int*> >();
-    test_range_comp<random_access_iterator<int*>, sentinel<int*> >();
+  test_range_comp<bidirectional_iterator<int*>, sentinel<int*> >();
+  test_range_comp<random_access_iterator<int*>, sentinel<int*> >();
 
-    // Test projection
+  // Test projection
 
-    using C = std::less<int>;
-    using I = std::initializer_list<std::pair<int, c_str>>;
-    std::pair<int, c_str> ia[] = {{6, {"six"}}, {5,{"five"}}, {4,{"four"}}, {3,{"three"}}, {2,{"two"}}, {1,{"one"}}};
-    CHECK(ranges::prev_permutation(ia, C(), &std::pair<int,c_str>::first));
-    ::check_equal(ia, I{{6, {"six"}}, {5,{"five"}}, {4,{"four"}}, {3,{"three"}}, {1,{"one"}}, {2,{"two"}}});
-    CHECK(ranges::prev_permutation(ia, C(), &std::pair<int,c_str>::first));
-    ::check_equal(ia, I{{6, {"six"}}, {5,{"five"}}, {4,{"four"}}, {2,{"two"}}, {3,{"three"}}, {1,{"one"}}});
-    CHECK(ranges::prev_permutation(ia, C(), &std::pair<int,c_str>::first));
-    ::check_equal(ia, I{{6, {"six"}}, {5,{"five"}}, {4,{"four"}}, {2,{"two"}}, {1,{"one"}}, {3,{"three"}}});
-    // etc..
+  using C = std::less<int>;
+  using I = std::initializer_list<std::pair<int, c_str>>;
+  std::pair<int, c_str> ia[] = {{6, {"six"}}, {5,{"five"}}, {4,{"four"}}, {3,{"three"}}, {2,{"two"}}, {1,{"one"}}};
+  CHECK(ranges::prev_permutation(ia, C(), &std::pair<int,c_str>::first));
+  ::check_equal(ia, I{{6, {"six"}}, {5,{"five"}}, {4,{"four"}}, {3,{"three"}}, {1,{"one"}}, {2,{"two"}}});
+  CHECK(ranges::prev_permutation(ia, C(), &std::pair<int,c_str>::first));
+  ::check_equal(ia, I{{6, {"six"}}, {5,{"five"}}, {4,{"four"}}, {2,{"two"}}, {3,{"three"}}, {1,{"one"}}});
+  CHECK(ranges::prev_permutation(ia, C(), &std::pair<int,c_str>::first));
+  ::check_equal(ia, I{{6, {"six"}}, {5,{"five"}}, {4,{"four"}}, {2,{"two"}}, {1,{"one"}}, {3,{"three"}}});
+  // etc..
 
-    return ::test_result();
+  return ::test_result();
 }

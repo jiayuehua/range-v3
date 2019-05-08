@@ -17,24 +17,24 @@
 
 int main()
 {
-    using namespace ranges;
+  using namespace ranges;
 
-    std::vector<int> v = view::ints(1,21);
-    auto & v2 = action::drop(v, 3);
-    CHECK(&v2 == &v);
-    CHECK(v.size() == 17u);
-    CHECK(v[0] == 4);
+  std::vector<int> v = view::ints(1,21);
+  auto & v2 = action::drop(v, 3);
+  CHECK(&v2 == &v);
+  CHECK(v.size() == 17u);
+  CHECK(v[0] == 4);
 
-    v = std::move(v) | action::drop(3);
-    CHECK(v.size() == 14u);
-    CHECK(v[0] == 7);
+  v = std::move(v) | action::drop(3);
+  CHECK(v.size() == 14u);
+  CHECK(v[0] == 7);
 
-    v |= action::drop(3);
-    CHECK(v.size() == 11u);
-    CHECK(v[0] == 10);
+  v |= action::drop(3);
+  CHECK(v.size() == 11u);
+  CHECK(v[0] == 10);
 
-    v |= action::drop(100);
-    CHECK(v.size() == 0u);
+  v |= action::drop(100);
+  CHECK(v.size() == 0u);
 
-    return ::test_result();
+  return ::test_result();
 }

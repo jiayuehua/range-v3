@@ -16,5 +16,5 @@
 
 int main()
 {
-    return ::test_result();
+  return ::test_result();
 }

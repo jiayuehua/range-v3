@@ -30,61 +30,61 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \ingroup group-concepts
+    template<typename I, typename O0, typename O1, typename C, typename P = ident>
+    using PartitionCopyable = meta::strict_and<
+      InputIterator<I>,
+      WeaklyIncrementable<O0>,
+      WeaklyIncrementable<O1>,
+      IndirectlyCopyable<I, O0>,
+      IndirectlyCopyable<I, O1>,
+      IndirectPredicate<C, projected<I, P>>>;
+
+    /// \addtogroup group-algorithms
+    /// @{
+    struct partition_copy_fn
     {
-        /// \ingroup group-concepts
-        template<typename I, typename O0, typename O1, typename C, typename P = ident>
-        using PartitionCopyable = meta::strict_and<
-            InputIterator<I>,
-            WeaklyIncrementable<O0>,
-            WeaklyIncrementable<O1>,
-            IndirectlyCopyable<I, O0>,
-            IndirectlyCopyable<I, O1>,
-            IndirectPredicate<C, projected<I, P>>>;
-
-        /// \addtogroup group-algorithms
-        /// @{
-        struct partition_copy_fn
+      template<typename I, typename S, typename O0, typename O1, typename C, typename P = ident,
+        CONCEPT_REQUIRES_(PartitionCopyable<I, O0, O1, C, P>() && Sentinel<S, I>())>
+      tagged_tuple<tag::in(I), tag::out1(O0), tag::out2(O1)>
+      operator()(I begin, S end, O0 o0, O1 o1, C pred, P proj = P{}) const
+      {
+        for(; begin != end; ++begin)
         {
-            template<typename I, typename S, typename O0, typename O1, typename C, typename P = ident,
-                CONCEPT_REQUIRES_(PartitionCopyable<I, O0, O1, C, P>() && Sentinel<S, I>())>
-            tagged_tuple<tag::in(I), tag::out1(O0), tag::out2(O1)>
-            operator()(I begin, S end, O0 o0, O1 o1, C pred, P proj = P{}) const
-            {
-                for(; begin != end; ++begin)
-                {
-                    auto &&x = *begin;
-                    if(invoke(pred, invoke(proj, x)))
-                    {
-                        *o0 = (decltype(x) &&) x;
-                        ++o0;
-                    }
-                    else
-                    {
-                        *o1 = (decltype(x) &&) x;
-                        ++o1;
-                    }
-                }
-                return make_tagged_tuple<tag::in, tag::out1, tag::out2>(begin, o0, o1);
-            }
+          auto &&x = *begin;
+          if(invoke(pred, invoke(proj, x)))
+          {
+            *o0 = (decltype(x) &&) x;
+            ++o0;
+          }
+          else
+          {
+            *o1 = (decltype(x) &&) x;
+            ++o1;
+          }
+        }
+        return make_tagged_tuple<tag::in, tag::out1, tag::out2>(begin, o0, o1);
+      }
 
-            template<typename Rng, typename O0, typename O1, typename C, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(PartitionCopyable<I, O0, O1, C, P>() && Range<Rng>())>
-            tagged_tuple<tag::in(safe_iterator_t<Rng>), tag::out1(O0), tag::out2(O1)>
-            operator()(Rng &&rng, O0 o0, O1 o1, C pred, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(o0), std::move(o1), std::move(pred),
-                    std::move(proj));
-            }
-        };
+      template<typename Rng, typename O0, typename O1, typename C, typename P = ident,
+        typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(PartitionCopyable<I, O0, O1, C, P>() && Range<Rng>())>
+      tagged_tuple<tag::in(safe_iterator_t<Rng>), tag::out1(O0), tag::out2(O1)>
+      operator()(Rng &&rng, O0 o0, O1 o1, C pred, P proj = P{}) const
+      {
+        return (*this)(begin(rng), end(rng), std::move(o0), std::move(o1), std::move(pred),
+          std::move(proj));
+      }
+    };
 
-        /// \sa `partition_copy_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<partition_copy_fn>,
-                               partition_copy)
-        /// @}
-    } // namespace v3
+    /// \sa `partition_copy_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<partition_copy_fn>,
+                 partition_copy)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

@@ -19,19 +19,19 @@
 
 namespace ranges
 {
-    inline namespace v3
-    {
-        template<typename... Ts>
-        using tagged_tuple =
-            tagged<std::tuple<detail::tag_elem<Ts>...>, detail::tag_spec<Ts>...>;
+  inline namespace v3
+  {
+    template<typename... Ts>
+    using tagged_tuple =
+      tagged<std::tuple<detail::tag_elem<Ts>...>, detail::tag_spec<Ts>...>;
 
-        template<typename...Tags, typename...Ts>
-        constexpr tagged_tuple<Tags(bind_element_t<Ts>)...>
-        make_tagged_tuple(Ts &&... ts)
-        {
-            return tagged_tuple<Tags(bind_element_t<Ts>)...>{static_cast<Ts&&>(ts)...};
-        }
+    template<typename...Tags, typename...Ts>
+    constexpr tagged_tuple<Tags(bind_element_t<Ts>)...>
+    make_tagged_tuple(Ts &&... ts)
+    {
+      return tagged_tuple<Tags(bind_element_t<Ts>)...>{static_cast<Ts&&>(ts)...};
     }
+  }
 }
 
 #endif

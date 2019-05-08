@@ -28,47 +28,47 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct copy_if_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct copy_if_fn
+      template<typename I, typename S, typename O, typename F, typename P = ident,
+        CONCEPT_REQUIRES_(InputIterator<I>() && Sentinel<S, I>() &&
+          WeaklyIncrementable<O>() && IndirectPredicate<F, projected<I, P> >() &&
+          IndirectlyCopyable<I, O>())>
+      tagged_pair<tag::in(I), tag::out(O)>
+      operator()(I begin, S end, O out, F pred, P proj = P{}) const
+      {
+        for(; begin != end; ++begin)
         {
-            template<typename I, typename S, typename O, typename F, typename P = ident,
-                CONCEPT_REQUIRES_(InputIterator<I>() && Sentinel<S, I>() &&
-                    WeaklyIncrementable<O>() && IndirectPredicate<F, projected<I, P> >() &&
-                    IndirectlyCopyable<I, O>())>
-            tagged_pair<tag::in(I), tag::out(O)>
-            operator()(I begin, S end, O out, F pred, P proj = P{}) const
-            {
-                for(; begin != end; ++begin)
-                {
-                    auto &&x = *begin;
-                    if(invoke(pred, invoke(proj, x)))
-                    {
-                        *out = (decltype(x) &&) x;
-                        ++out;
-                    }
-                }
-                return {begin, out};
-            }
+          auto &&x = *begin;
+          if(invoke(pred, invoke(proj, x)))
+          {
+            *out = (decltype(x) &&) x;
+            ++out;
+          }
+        }
+        return {begin, out};
+      }
 
-            template<typename Rng, typename O, typename F, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(InputRange<Rng>() && WeaklyIncrementable<O>() &&
-                    IndirectPredicate<F, projected<I, P> >() && IndirectlyCopyable<I, O>())>
-            tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)>
-            operator()(Rng &&rng, O out, F pred, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(out), std::move(pred), std::move(proj));
-            }
-        };
+      template<typename Rng, typename O, typename F, typename P = ident,
+        typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(InputRange<Rng>() && WeaklyIncrementable<O>() &&
+          IndirectPredicate<F, projected<I, P> >() && IndirectlyCopyable<I, O>())>
+      tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)>
+      operator()(Rng &&rng, O out, F pred, P proj = P{}) const
+      {
+        return (*this)(begin(rng), end(rng), std::move(out), std::move(pred), std::move(proj));
+      }
+    };
 
-        /// \sa `copy_if_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<copy_if_fn>, copy_if)
-        /// @}
-    } // namespace v3
+    /// \sa `copy_if_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<copy_if_fn>, copy_if)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

@@ -22,46 +22,46 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-views
+    /// @{
+    namespace view
     {
-        /// \addtogroup group-views
-        /// @{
-        namespace view
+      struct addressof_fn
+      {
+      private:
+        struct pred
         {
-            struct addressof_fn
-            {
-            private:
-                struct pred
-                {
-                    template<class V>
-                    constexpr V *operator()(V &value) const noexcept
-                    {
-                        return std::addressof(value);
-                    }
-                };
+          template<class V>
+          constexpr V *operator()(V &value) const noexcept
+          {
+            return std::addressof(value);
+          }
+        };
 
-            public:
-                template<typename Rng>
-                using Constraint = meta::and_<
-                    InputRange<Rng>,
-                    std::is_lvalue_reference<range_reference_t<Rng>>>;
+      public:
+        template<typename Rng>
+        using Constraint = meta::and_<
+          InputRange<Rng>,
+          std::is_lvalue_reference<range_reference_t<Rng>>>;
 
-                template<typename Rng,
-                    CONCEPT_REQUIRES_(Constraint<Rng>())>
-                RANGES_CXX14_CONSTEXPR
-                auto operator()(Rng &&rng) const
-                RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
-                (
-                    transform(all(static_cast<Rng &&>(rng)), pred{})
-                )
-            };
+        template<typename Rng,
+          CONCEPT_REQUIRES_(Constraint<Rng>())>
+        RANGES_CXX14_CONSTEXPR
+        auto operator()(Rng &&rng) const
+        RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT
+        (
+          transform(all(static_cast<Rng &&>(rng)), pred{})
+        )
+      };
 
-            /// \relates remove_fn
-            /// \ingroup group-views
-            RANGES_INLINE_VARIABLE(view<addressof_fn>, addressof)
-        }
-        /// @}
+      /// \relates remove_fn
+      /// \ingroup group-views
+      RANGES_INLINE_VARIABLE(view<addressof_fn>, addressof)
     }
+    /// @}
+  }
 }
 
 #endif //RANGES_V3_VIEW_ADDRESSOF_HPP

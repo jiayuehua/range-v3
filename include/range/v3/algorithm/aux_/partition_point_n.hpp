@@ -21,44 +21,44 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \ingroup group-concepts
+    template<typename I, typename C, typename P = ident>
+    using PartitionPointable = meta::strict_and<
+      ForwardIterator<I>,
+      IndirectPredicate<C, projected<I, P>>>;
+
+    namespace aux
     {
-        /// \ingroup group-concepts
-        template<typename I, typename C, typename P = ident>
-        using PartitionPointable = meta::strict_and<
-            ForwardIterator<I>,
-            IndirectPredicate<C, projected<I, P>>>;
-
-        namespace aux
+      struct partition_point_n_fn
+      {
+        template<typename I, typename C, typename P = ident,
+          CONCEPT_REQUIRES_(PartitionPointable<I, C, P>())>
+        I operator()(I begin, difference_type_t<I> d, C pred, P proj = P{}) const
         {
-            struct partition_point_n_fn
+          if(0 < d)
+          {
+            do
             {
-                template<typename I, typename C, typename P = ident,
-                    CONCEPT_REQUIRES_(PartitionPointable<I, C, P>())>
-                I operator()(I begin, difference_type_t<I> d, C pred, P proj = P{}) const
-                {
-                    if(0 < d)
-                    {
-                        do
-                        {
-                            auto half = d / 2;
-                            auto middle = next(uncounted(begin), half);
-                            if(invoke(pred, invoke(proj, *middle)))
-                            {
-                                begin = recounted(begin, std::move(++middle), half + 1);
-                                d -= half + 1;
-                            }
-                            else
-                                d = half;
-                        } while(0 != d);
-                    }
-                    return begin;
-                }
-            };
-
-            RANGES_INLINE_VARIABLE(partition_point_n_fn, partition_point_n)
+              auto half = d / 2;
+              auto middle = next(uncounted(begin), half);
+              if(invoke(pred, invoke(proj, *middle)))
+              {
+                begin = recounted(begin, std::move(++middle), half + 1);
+                d -= half + 1;
+              }
+              else
+                d = half;
+            } while(0 != d);
+          }
+          return begin;
         }
-    } // namespace v3
+      };
+
+      RANGES_INLINE_VARIABLE(partition_point_n_fn, partition_point_n)
+    }
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

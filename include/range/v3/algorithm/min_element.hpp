@@ -25,39 +25,39 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct min_element_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct min_element_fn
-        {
-            template<typename I, typename S, typename C = ordered_less, typename P = ident,
-                CONCEPT_REQUIRES_(ForwardIterator<I>() && Sentinel<S, I>() &&
-                    IndirectRelation<C, projected<I, P>>())>
-            I operator()(I begin, S end, C pred = C{}, P proj = P{}) const
-            {
-                if(begin != end)
-                    for(auto tmp = next(begin); tmp != end; ++tmp)
-                        if(invoke(pred, invoke(proj, *tmp), invoke(proj, *begin)))
-                            begin = tmp;
-                return begin;
-            }
+      template<typename I, typename S, typename C = ordered_less, typename P = ident,
+        CONCEPT_REQUIRES_(ForwardIterator<I>() && Sentinel<S, I>() &&
+          IndirectRelation<C, projected<I, P>>())>
+      I operator()(I begin, S end, C pred = C{}, P proj = P{}) const
+      {
+        if(begin != end)
+          for(auto tmp = next(begin); tmp != end; ++tmp)
+            if(invoke(pred, invoke(proj, *tmp), invoke(proj, *begin)))
+              begin = tmp;
+        return begin;
+      }
 
-            template<typename Rng, typename C = ordered_less, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(ForwardRange<Rng>() &&
-                    IndirectRelation<C, projected<I, P>>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng, C pred = C{}, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
-            }
-        };
+      template<typename Rng, typename C = ordered_less, typename P = ident,
+        typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(ForwardRange<Rng>() &&
+          IndirectRelation<C, projected<I, P>>())>
+      safe_iterator_t<Rng> operator()(Rng &&rng, C pred = C{}, P proj = P{}) const
+      {
+        return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
+      }
+    };
 
-        /// \sa `min_element_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<min_element_fn>, min_element)
-        /// @}
-    } // namespace v3
+    /// \sa `min_element_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<min_element_fn>, min_element)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard

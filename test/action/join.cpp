@@ -19,16 +19,16 @@
 
 int main()
 {
-    using namespace ranges;
+  using namespace ranges;
 
-    std::vector<std::string> v {"hello"," ","world"};
-    auto s = v | move | action::join;
-    static_assert(std::is_same<decltype(s), std::string>::value, "");
-    CHECK(s == "hello world");
+  std::vector<std::string> v {"hello"," ","world"};
+  auto s = v | move | action::join;
+  static_assert(std::is_same<decltype(s), std::string>::value, "");
+  CHECK(s == "hello world");
 
-    auto s2 = v | view::transform(view::all) | action::join;
-    static_assert(std::is_same<decltype(s2), std::vector<char>>::value, "");
-    CHECK(std::string(s2.begin(), s2.end()) == "hello world");
+  auto s2 = v | view::transform(view::all) | action::join;
+  static_assert(std::is_same<decltype(s2), std::vector<char>>::value, "");
+  CHECK(std::string(s2.begin(), s2.end()) == "hello world");
 
-    return ::test_result();
+  return ::test_result();
 }

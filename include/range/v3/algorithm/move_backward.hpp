@@ -28,38 +28,38 @@
 
 namespace ranges
 {
-    inline namespace v3
+  inline namespace v3
+  {
+    /// \addtogroup group-algorithms
+    /// @{
+    struct move_backward_fn
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct move_backward_fn
-        {
-            template<typename I, typename S, typename O,
-                CONCEPT_REQUIRES_(BidirectionalIterator<I>() && Sentinel<S, I>() &&
-                    BidirectionalIterator<O>() && IndirectlyMovable<I, O>())>
-            tagged_pair<tag::in(I), tag::out(O)> operator()(I begin, S end_, O out) const
-            {
-                I i = ranges::next(begin, end_), end = i;
-                while(begin != i)
-                    *--out = iter_move(--i);
-                return {end, out};
-            }
+      template<typename I, typename S, typename O,
+        CONCEPT_REQUIRES_(BidirectionalIterator<I>() && Sentinel<S, I>() &&
+          BidirectionalIterator<O>() && IndirectlyMovable<I, O>())>
+      tagged_pair<tag::in(I), tag::out(O)> operator()(I begin, S end_, O out) const
+      {
+        I i = ranges::next(begin, end_), end = i;
+        while(begin != i)
+          *--out = iter_move(--i);
+        return {end, out};
+      }
 
-            template<typename Rng, typename O,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(BidirectionalRange<Rng>() && BidirectionalIterator<O>() &&
-                    IndirectlyMovable<I, O>())>
-            tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)> operator()(Rng &&rng, O out) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(out));
-            }
-        };
+      template<typename Rng, typename O,
+        typename I = iterator_t<Rng>,
+        CONCEPT_REQUIRES_(BidirectionalRange<Rng>() && BidirectionalIterator<O>() &&
+          IndirectlyMovable<I, O>())>
+      tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)> operator()(Rng &&rng, O out) const
+      {
+        return (*this)(begin(rng), end(rng), std::move(out));
+      }
+    };
 
-        /// \sa `move_backward_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<move_backward_fn>, move_backward)
-        /// @}
-    } // namespace v3
+    /// \sa `move_backward_fn`
+    /// \ingroup group-algorithms
+    RANGES_INLINE_VARIABLE(with_braced_init_args<move_backward_fn>, move_backward)
+    /// @}
+  } // namespace v3
 } // namespace ranges
 
 #endif // include guard
